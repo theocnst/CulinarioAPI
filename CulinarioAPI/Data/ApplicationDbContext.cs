@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using CulinarioAPI.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace CulinarioAPI.Data
 {
