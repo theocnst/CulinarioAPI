@@ -35,7 +35,7 @@ namespace CulinarioAPI.Controllers
 
             var token = GenerateJwtToken(user);
             SetTokenCookie(token);
-            return Ok(new { message = "Registration successful" });
+            return Ok(new { token, message = "Registration successful" });
         }
 
         [HttpPost("login")]
@@ -47,7 +47,7 @@ namespace CulinarioAPI.Controllers
 
             var token = GenerateJwtToken(user);
             SetTokenCookie(token);
-            return Ok(new { message = "Login successful" });
+            return Ok(new { token, message = "Login successful" });
         }
 
         [Authorize]
@@ -62,7 +62,44 @@ namespace CulinarioAPI.Controllers
         [HttpGet("authenticated")]
         public IActionResult Authenticated()
         {
-            return Ok(true);
+            var authHeader = Request.Headers["Authorization"].ToString();
+            if (string.IsNullOrEmpty(authHeader) || !authHeader.StartsWith("Bearer "))
+            {
+                Console.WriteLine("No token provided.");
+                return Unauthorized("No token provided.");
+            }
+
+            var token = authHeader.Substring("Bearer ".Length).Trim();
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var key = Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]);
+
+            try
+            {
+                var validationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(key),
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidIssuer = _configuration["Jwt:Issuer"],
+                    ValidAudience = _configuration["Jwt:Audience"],
+                    ClockSkew = TimeSpan.Zero
+                };
+
+                SecurityToken validatedToken;
+                var principal = tokenHandler.ValidateToken(token, validationParameters, out validatedToken);
+
+                var jwtToken = (JwtSecurityToken)validatedToken;
+                var userId = jwtToken.Claims.First(x => x.Type == ClaimTypes.NameIdentifier).Value;
+
+                Console.WriteLine($"Token is valid for user ID: {userId}");
+                return Ok(true);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Token validation failed: {ex.Message}");
+                return Unauthorized("Invalid token.");
+            }
         }
 
         private void SetTokenCookie(string token)
@@ -70,11 +107,12 @@ namespace CulinarioAPI.Controllers
             var cookieOptions = new CookieOptions
             {
                 HttpOnly = true,
-                Expires = DateTime.UtcNow.AddDays(7),
-                Secure = true, // Set to true if using HTTPS
-                SameSite = SameSiteMode.Strict
+                Expires = DateTime.UtcNow.AddMinutes(1),
+                Secure = true,
+                SameSite = SameSiteMode.None // Updated to None
             };
             Response.Cookies.Append("jwt", token, cookieOptions);
+            Console.WriteLine("Token set in cookie: " + token);
         }
 
         private string GenerateJwtToken(User user)
@@ -93,7 +131,7 @@ namespace CulinarioAPI.Controllers
                 issuer: _configuration["Jwt:Issuer"],
                 audience: _configuration["Jwt:Audience"],
                 claims: claims,
-                expires: DateTime.Now.AddDays(7),
+                expires: DateTime.UtcNow.AddMinutes(1),
                 signingCredentials: creds
             );
 
