@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CulinarioAPI.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240607143737_RecipeUserUpdate")]
-    partial class RecipeUserUpdate
+    [Migration("20240607192610_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

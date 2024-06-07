@@ -1,141 +1,138 @@
 ﻿using Azure.Core;
 using Azure;
-using CulinarioAPI.Data;
-using CulinarioAPI.Models;
+using CulinarioAPI.Dtos;
+using CulinarioAPI.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
-using Microsoft.EntityFrameworkCore;
 
 [ApiController]
 [Route("api/[controller]")]
 public class UserCredentialsController : ControllerBase
 {
-    private readonly ApplicationDbContext _context;
-    private readonly IConfiguration _configuration;
+    private readonly IUserCredentialsService _userCredentialsService;
     private readonly ILogger<UserCredentialsController> _logger;
 
-    public UserCredentialsController(ApplicationDbContext context, IConfiguration configuration, ILogger<UserCredentialsController> logger)
+    public UserCredentialsController(IUserCredentialsService userCredentialsService, ILogger<UserCredentialsController> logger)
     {
-        _context = context;
-        _configuration = configuration;
+        _userCredentialsService = userCredentialsService;
         _logger = logger;
     }
 
     [HttpPost("register")]
-    public async Task<IActionResult> Register([FromBody] UserCredentials user)
+    public async Task<IActionResult> Register([FromBody] UserRegistrationDto userDto)
     {
         _logger.LogInformation("Register method called.");
 
-        if (await _context.UserCredentials.AnyAsync(u => u.Email == user.Email))
+        try
         {
-            _logger.LogWarning("Registration failed: Email already exists.");
-            return BadRequest("Email already exists.");
+            if (!await _userCredentialsService.RegisterUserAsync(userDto))
+            {
+                _logger.LogWarning("Registration failed: Email already exists.");
+                return BadRequest("Email already exists.");
+            }
+
+            var token = await _userCredentialsService.AuthenticateUserAsync(new AuthRequestDto { Email = userDto.Email, Password = userDto.Password });
+            if (token == null)
+            {
+                _logger.LogError("Registration failed: Token generation failed.");
+                return BadRequest("Registration failed.");
+            }
+
+            SetTokenCookie(token);
+
+            _logger.LogInformation("User registered successfully: {Email}", userDto.Email);
+            return Ok(new { token, message = "Registration successful" });
         }
-
-        user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(user.PasswordHash);
-        _context.UserCredentials.Add(user);
-        await _context.SaveChangesAsync();
-
-        var token = GenerateJwtToken(user);
-        SetTokenCookie(token);
-
-        _logger.LogInformation("User registered successfully: {Email}", user.Email);
-        return Ok(new { token, message = "Registration successful" });
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "An error occurred during registration for email: {Email}", userDto.Email);
+            return StatusCode(500, "Internal server error");
+        }
     }
 
     [HttpPost("login")]
-    public async Task<IActionResult> Login([FromBody] AuthRequest request)
+    public async Task<IActionResult> Login([FromBody] AuthRequestDto request)
     {
-        _logger.LogInformation("Login method called.");
+        _logger.LogInformation("Login method called for email: {Email}", request.Email);
 
-        var user = await _context.UserCredentials.SingleOrDefaultAsync(u => u.Email == request.Email);
-        if (user == null || !BCrypt.Net.BCrypt.Verify(request.Password, user.PasswordHash))
+        try
         {
-            _logger.LogWarning("Login failed: Invalid credentials.");
-            return Unauthorized("Invalid credentials.");
+            var token = await _userCredentialsService.AuthenticateUserAsync(request);
+            if (token == null)
+            {
+                _logger.LogWarning("Login failed: Invalid credentials for email: {Email}", request.Email);
+                return Unauthorized("Invalid credentials.");
+            }
+
+            SetTokenCookie(token);
+
+            _logger.LogInformation("User logged in successfully: {Email}", request.Email);
+            return Ok(new { token, message = "Login successful" });
         }
-
-        var token = GenerateJwtToken(user);
-        SetTokenCookie(token);
-
-        _logger.LogInformation("User logged in successfully: {Email}", request.Email);
-        return Ok(new { token, message = "Login successful" });
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "An error occurred during login for email: {Email}", request.Email);
+            return StatusCode(500, "Internal server error");
+        }
     }
 
     [Authorize]
     [HttpPost("logout")]
-    public IActionResult Logout()
+    public async Task<IActionResult> Logout()
     {
         _logger.LogInformation("Logout method called.");
 
-        Response.Cookies.Delete("jwt");
+        try
+        {
+            var result = await _userCredentialsService.LogoutUserAsync();
+            if (!result)
+            {
+                _logger.LogError("Logout failed.");
+                return BadRequest("Logout failed.");
+            }
 
-        _logger.LogInformation("User logged out successfully.");
-        return Ok(new { message = "Logout successful" });
+            Response.Cookies.Delete("jwt");
+
+            _logger.LogInformation("User logged out successfully.");
+            return Ok(new { message = "Logout successful" });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "An error occurred during logout.");
+            return StatusCode(500, "Internal server error");
+        }
     }
 
     [Authorize]
     [HttpGet("authenticated")]
-    public IActionResult Authenticated()
+    public async Task<IActionResult> Authenticated()
     {
         _logger.LogInformation("Authenticated method called.");
 
-        var authHeader = Request.Headers["Authorization"].ToString();
-        if (string.IsNullOrEmpty(authHeader) || !authHeader.StartsWith("Bearer "))
-        {
-            _logger.LogWarning("No token provided.");
-            return Unauthorized(new { message = "No token provided." });
-        }
-
-        var token = authHeader.Substring("Bearer ".Length).Trim();
-        var tokenHandler = new JwtSecurityTokenHandler();
-        var key = Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]);
-
         try
         {
-            var validationParameters = new TokenValidationParameters
+            var authHeader = Request.Headers["Authorization"].ToString();
+            if (string.IsNullOrEmpty(authHeader) || !authHeader.StartsWith("Bearer "))
             {
-                ValidateIssuerSigningKey = true,
-                IssuerSigningKey = new SymmetricSecurityKey(key),
-                ValidateIssuer = true,
-                ValidateAudience = true,
-                ValidIssuer = _configuration["Jwt:Issuer"],
-                ValidAudience = _configuration["Jwt:Audience"],
-                ClockSkew = TimeSpan.Zero
-            };
+                _logger.LogWarning("No token provided.");
+                return Unauthorized(new { message = "No token provided." });
+            }
 
-            SecurityToken validatedToken;
-            var principal = tokenHandler.ValidateToken(token, validationParameters, out validatedToken);
+            var token = authHeader.Substring("Bearer ".Length).Trim();
+            var isValid = await _userCredentialsService.IsTokenValidAsync(token);
+            if (!isValid)
+            {
+                _logger.LogWarning("Invalid token.");
+                return Unauthorized(new { message = "Invalid token." });
+            }
 
-            var jwtToken = (JwtSecurityToken)validatedToken;
-            var userId = jwtToken.Claims.First(x => x.Type == ClaimTypes.NameIdentifier).Value;
-
-            _logger.LogInformation("Token is valid for user ID: {UserId}", userId);
-            return Ok(new { message = "Token is valid", userId });
-        }
-        catch (SecurityTokenExpiredException ex)
-        {
-            _logger.LogError(ex, "Token has expired.");
-            return Unauthorized(new { message = "Token has expired." });
-        }
-        catch (SecurityTokenInvalidSignatureException ex)
-        {
-            _logger.LogError(ex, "Invalid token signature.");
-            return Unauthorized(new { message = "Invalid token signature." });
-        }
-        catch (SecurityTokenException ex)
-        {
-            _logger.LogError(ex, "Token validation failed.");
-            return Unauthorized(new { message = "Token validation failed." });
+            _logger.LogInformation("Token is valid.");
+            return Ok(new { message = "Token is valid" });
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Unexpected error during token validation.");
-            return StatusCode(500, new { message = "Unexpected error during token validation." });
+            _logger.LogError(ex, "An error occurred during token validation.");
+            return StatusCode(500, "Internal server error");
         }
     }
 
@@ -144,35 +141,11 @@ public class UserCredentialsController : ControllerBase
         var cookieOptions = new CookieOptions
         {
             HttpOnly = true,
-            Expires = DateTime.UtcNow.AddMinutes(1),
+            Expires = DateTime.UtcNow.AddMinutes(15), // Ensure the cookie expiration matches token expiration
             Secure = true,
             SameSite = SameSiteMode.None // Updated to None
         };
         Response.Cookies.Append("jwt", token, cookieOptions);
         _logger.LogInformation("Token set in cookie: {Token}", token);
-    }
-
-    private string GenerateJwtToken(UserCredentials user)
-    {
-        var claims = new[]
-        {
-            new Claim(JwtRegisteredClaimNames.Sub, user.Email),
-            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-            new Claim(ClaimTypes.NameIdentifier, user.UserId.ToString())
-        };
-
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
-        var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-
-        var token = new JwtSecurityToken(
-            issuer: _configuration["Jwt:Issuer"],
-            audience: _configuration["Jwt:Audience"],
-            claims: claims,
-            expires: DateTime.UtcNow.AddMinutes(1),
-            signingCredentials: creds
-        );
-
-        _logger.LogInformation("JWT token generated for user: {Email}", user.Email);
-        return new JwtSecurityTokenHandler().WriteToken(token);
     }
 }

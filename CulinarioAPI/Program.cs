@@ -1,4 +1,7 @@
+using CulinarioAPI;
 using CulinarioAPI.Data;
+using CulinarioAPI.Repositories;
+using CulinarioAPI.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -16,7 +19,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowSpecificOrigin", policy =>
-        policy.WithOrigins("http://localhost:4200")
+        policy.WithOrigins("http://localhost:4200", "https://localhost:7053")
               .AllowAnyMethod()
               .AllowAnyHeader()
               .AllowCredentials());
@@ -44,6 +47,17 @@ builder.Services.AddAuthentication(options =>
 
 builder.Services.AddAuthorization();
 
+// Register AutoMapper
+builder.Services.AddAutoMapper(typeof(MappingProfile));
+
+// Register repositories
+builder.Services.AddScoped<IUserCredentialsRepository, UserCredentialsRepository>();
+builder.Services.AddScoped<IUserProfileRepository, UserProfileRepository>();
+
+// Register services
+builder.Services.AddScoped<IUserCredentialsService, UserCredentialsService>();
+builder.Services.AddScoped<IUserProfileService, UserProfileService>();
+
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
@@ -54,6 +68,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseCors("AllowSpecificOrigin"); // Ensure CORS is configured correctly
+
 app.UseAuthentication();
 app.UseAuthorization();
 

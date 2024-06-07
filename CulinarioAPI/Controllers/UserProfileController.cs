@@ -1,67 +1,68 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using CulinarioAPI.Dtos;
+using CulinarioAPI.Services;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using CulinarioAPI.Data;
-using CulinarioAPI.Models;
+using Microsoft.Extensions.Logging;
+using System;
+using System.Threading.Tasks;
 
 [ApiController]
 [Route("api/[controller]")]
 public class UserProfileController : ControllerBase
 {
-    private readonly ApplicationDbContext _context;
+    private readonly IUserProfileService _userProfileService;
     private readonly ILogger<UserProfileController> _logger;
 
-    public UserProfileController(ApplicationDbContext context, ILogger<UserProfileController> logger)
+    public UserProfileController(IUserProfileService userProfileService, ILogger<UserProfileController> logger)
     {
-        _context = context;
+        _userProfileService = userProfileService;
         _logger = logger;
     }
 
-    [Authorize]
     [HttpGet("{id}")]
     public async Task<IActionResult> GetUserProfile(int id)
     {
-        var profile = await _context.UserProfiles
-            .Include(p => p.Ratings)
-            .Include(p => p.Friends)
-            .Include(p => p.LikedRecipes)
-            .SingleOrDefaultAsync(p => p.UserId == id);
-
-        if (profile == null)
-        {
-            return NotFound();
-        }
-
-        return Ok(profile);
-    }
-
-    [Authorize]
-    [HttpPut("{id}")]
-    public async Task<IActionResult> UpdateUserProfile(int id, [FromBody] UserProfile profile)
-    {
-        if (id != profile.UserProfileId)
-        {
-            return BadRequest();
-        }
-
-        _context.Entry(profile).State = EntityState.Modified;
+        _logger.LogInformation("GetUserProfile called with id: {Id}", id);
 
         try
         {
-            await _context.SaveChangesAsync();
-        }
-        catch (DbUpdateConcurrencyException)
-        {
-            if (!_context.UserProfiles.Any(p => p.UserProfileId == id))
+            var profile = await _userProfileService.GetUserProfileAsync(id);
+
+            if (profile == null)
             {
+                _logger.LogWarning("UserProfile not found for id: {Id}", id);
                 return NotFound();
             }
-            else
-            {
-                throw;
-            }
-        }
 
-        return NoContent();
+            _logger.LogInformation("UserProfile found for id: {Id}", id);
+            return Ok(profile);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "An error occurred while getting UserProfile for id: {Id}", id);
+            return StatusCode(500, "Internal server error");
+        }
+    }
+
+    [HttpPut("{id}")]
+    public async Task<IActionResult> UpdateUserProfile(int id, [FromBody] UserProfileUpdateDto profileDto)
+    {
+        _logger.LogInformation("UpdateUserProfile called with id: {Id}", id);
+
+        try
+        {
+            if (!await _userProfileService.UpdateUserProfileAsync(id, profileDto))
+            {
+                _logger.LogWarning("Update failed, UserProfile not found for id: {Id}", id);
+                return NotFound();
+            }
+
+            _logger.LogInformation("UserProfile updated for id: {Id}", id);
+            return NoContent();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "An error occurred while updating UserProfile for id: {Id}", id);
+            return StatusCode(500, "Internal server error");
+        }
     }
 }
