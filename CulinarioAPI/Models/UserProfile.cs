@@ -5,11 +5,9 @@ namespace CulinarioAPI.Models
 {
     public class UserProfile
     {
-        [Key]
-        public int UserProfileId { get; set; }
-
-        [ForeignKey("UserCredentials")]
+        [Key, ForeignKey("UserCredentials")]
         public int UserId { get; set; }
+
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public string ProfilePicture { get; set; }

@@ -1,9 +1,6 @@
 ﻿using CulinarioAPI.Dtos;
 using CulinarioAPI.Services;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using System;
-using System.Threading.Tasks;
 
 [ApiController]
 [Route("api/[controller]")]

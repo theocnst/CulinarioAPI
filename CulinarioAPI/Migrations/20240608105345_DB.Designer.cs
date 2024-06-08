@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CulinarioAPI.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240607192610_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20240608105345_DB")]
+    partial class DB
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -272,11 +272,8 @@ namespace CulinarioAPI.Migrations
 
             modelBuilder.Entity("CulinarioAPI.Models.UserProfile", b =>
                 {
-                    b.Property<int>("UserProfileId")
-                        .ValueGeneratedOnAdd()
+                    b.Property<int>("UserId")
                         .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("UserProfileId"));
 
                     b.Property<DateTime>("DateOfBirth")
                         .HasColumnType("datetime2");
@@ -297,13 +294,7 @@ namespace CulinarioAPI.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
-
-                    b.HasKey("UserProfileId");
-
-                    b.HasIndex("UserId")
-                        .IsUnique();
+                    b.HasKey("UserId");
 
                     b.ToTable("UserProfiles");
                 });

@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace CulinarioAPI.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class DB : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -57,8 +57,6 @@ namespace CulinarioAPI.Migrations
                 name: "UserProfiles",
                 columns: table => new
                 {
-                    UserProfileId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
                     UserId = table.Column<int>(type: "int", nullable: false),
                     FirstName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     LastName = table.Column<string>(type: "nvarchar(max)", nullable: false),
@@ -68,7 +66,7 @@ namespace CulinarioAPI.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_UserProfiles", x => x.UserProfileId);
+                    table.PrimaryKey("PK_UserProfiles", x => x.UserId);
                     table.ForeignKey(
                         name: "FK_UserProfiles_UserCredentials_UserId",
                         column: x => x.UserId,
@@ -164,13 +162,13 @@ namespace CulinarioAPI.Migrations
                         name: "FK_Friends_UserProfiles_FriendUserProfileId",
                         column: x => x.FriendUserProfileId,
                         principalTable: "UserProfiles",
-                        principalColumn: "UserProfileId",
+                        principalColumn: "UserId",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Friends_UserProfiles_UserProfileId",
                         column: x => x.UserProfileId,
                         principalTable: "UserProfiles",
-                        principalColumn: "UserProfileId",
+                        principalColumn: "UserId",
                         onDelete: ReferentialAction.Restrict);
                 });
 
@@ -196,7 +194,7 @@ namespace CulinarioAPI.Migrations
                         name: "FK_LikedRecipes_UserProfiles_UserId",
                         column: x => x.UserId,
                         principalTable: "UserProfiles",
-                        principalColumn: "UserProfileId",
+                        principalColumn: "UserId",
                         onDelete: ReferentialAction.Restrict);
                 });
 
@@ -223,7 +221,7 @@ namespace CulinarioAPI.Migrations
                         name: "FK_Ratings_UserProfiles_UserProfileId",
                         column: x => x.UserProfileId,
                         principalTable: "UserProfiles",
-                        principalColumn: "UserProfileId",
+                        principalColumn: "UserId",
                         onDelete: ReferentialAction.Restrict);
                 });
 
@@ -277,12 +275,6 @@ namespace CulinarioAPI.Migrations
                 name: "IX_Recipes_AdminId",
                 table: "Recipes",
                 column: "AdminId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_UserProfiles_UserId",
-                table: "UserProfiles",
-                column: "UserId",
-                unique: true);
         }
 
         /// <inheritdoc />

@@ -1,10 +1,6 @@
 ﻿using AutoMapper;
 using CulinarioAPI.Dtos;
-using CulinarioAPI.Models;
 using CulinarioAPI.Repositories;
-using Microsoft.Extensions.Logging;
-using System;
-using System.Threading.Tasks;
 
 namespace CulinarioAPI.Services
 {
