@@ -1,6 +1,9 @@
 ﻿using AutoMapper;
-using CulinarioAPI.Dtos;
-using CulinarioAPI.Models;
+using CulinarioAPI.Dtos.RecipeCreateDtos;
+using CulinarioAPI.Dtos.RecipeDtos;
+using CulinarioAPI.Models.RecipeModels;
+using CulinarioAPI.Dtos.UserDtos;
+using CulinarioAPI.Models.UserModels;
 
 namespace CulinarioAPI
 {
@@ -11,6 +14,15 @@ namespace CulinarioAPI
             CreateMap<UserRegistrationDto, UserCredentials>();
             CreateMap<UserProfile, UserProfileDto>();
             CreateMap<UserProfileUpdateDto, UserProfile>();
+
+            CreateMap<Recipe, RecipeDto>();
+            CreateMap<RecipeCreateDto, Recipe>();
+            CreateMap<Ingredient, IngredientDto>().ReverseMap();
+            CreateMap<IngredientCreateDto, Ingredient>();
+            CreateMap<Instruction, InstructionDto>().ReverseMap();
+            CreateMap<InstructionCreateDto, Instruction>();
+            CreateMap<NutritionInfo, NutritionInfoDto>().ReverseMap();
+            CreateMap<NutritionInfoCreateDto, NutritionInfo>();
         }
     }
 }

@@ -1,120 +1,73 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using CulinarioAPI.Dtos.RecipeCreateDtos;
+using CulinarioAPI.Dtos.RecipeDtos;
+using CulinarioAPI.Services.RecipeServices;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using CulinarioAPI.Data;
-using CulinarioAPI.Models;
+using Microsoft.Extensions.Logging;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
-[ApiController]
-[Route("api/[controller]")]
-public class RecipeController : ControllerBase
+namespace CulinarioAPI.Controllers
 {
-    private readonly ApplicationDbContext _context;
-
-    public RecipeController(ApplicationDbContext context)
+    [ApiController]
+    [Route("api/[controller]")]
+    public class RecipeController : ControllerBase
     {
-        _context = context;
-    }
+        private readonly IRecipeService _recipeService;
+        private readonly ILogger<RecipeController> _logger;
 
-    [HttpGet]
-    public async Task<IActionResult> GetRecipes()
-    {
-        var recipes = await _context.Recipes.Include(r => r.Ingredients).Include(r => r.Instructions).ToListAsync();
-        return Ok(recipes);
-    }
-
-    [HttpGet("{id}")]
-    public async Task<IActionResult> GetRecipe(int id)
-    {
-        var recipe = await _context.Recipes
-            .Include(r => r.Ingredients)
-            .Include(r => r.Instructions)
-            .Include(r => r.NutritionInfo)
-            .Include(r => r.Ratings)
-            .FirstOrDefaultAsync(r => r.RecipeId == id);
-
-        if (recipe == null)
+        public RecipeController(IRecipeService recipeService, ILogger<RecipeController> logger)
         {
-            return NotFound();
+            _recipeService = recipeService;
+            _logger = logger;
         }
 
-        return Ok(recipe);
-    }
-
-    [Authorize(Roles = "Admin")]
-    [HttpPost]
-    public async Task<IActionResult> AddRecipe([FromBody] Recipe recipe)
-    {
-        if (ModelState.IsValid)
+        [HttpGet]
+        public async Task<IActionResult> GetAllRecipes()
         {
-            _context.Recipes.Add(recipe);
-            await _context.SaveChangesAsync();
+            _logger.LogInformation("GetAllRecipes called");
+            var recipes = await _recipeService.GetAllRecipesAsync();
+            return Ok(recipes);
+        }
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetRecipeById(int id)
+        {
+            _logger.LogInformation("GetRecipeById called with id: {Id}", id);
+            var recipe = await _recipeService.GetRecipeByIdAsync(id);
+            if (recipe == null)
+            {
+                _logger.LogWarning("Recipe not found with id: {Id}", id);
+                return NotFound();
+            }
             return Ok(recipe);
         }
 
-        return BadRequest(ModelState);
-    }
-
-    [Authorize(Roles = "Admin")]
-    [HttpPut("{id}")]
-    public async Task<IActionResult> UpdateRecipe(int id, [FromBody] Recipe recipe)
-    {
-        if (id != recipe.RecipeId)
+        [HttpPost]
+        public async Task<IActionResult> AddRecipe([FromBody] RecipeCreateDto recipeCreateDto)
         {
-            return BadRequest();
+            _logger.LogInformation("AddRecipe called");
+
+            // Add the recipe
+            var createdRecipe = await _recipeService.AddRecipeAsync(recipeCreateDto);
+
+            // Return the created recipe
+            return CreatedAtAction(nameof(GetRecipeById), new { id = createdRecipe.RecipeId }, createdRecipe);
         }
 
-        _context.Entry(recipe).State = EntityState.Modified;
-
-        try
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateRecipe(int id, [FromBody] RecipeCreateDto recipeCreateDto)
         {
-            await _context.SaveChangesAsync();
-        }
-        catch (DbUpdateConcurrencyException)
-        {
-            if (!_context.Recipes.Any(r => r.RecipeId == id))
-            {
-                return NotFound();
-            }
-            else
-            {
-                throw;
-            }
+            _logger.LogInformation("UpdateRecipe called with id: {Id}", id);
+            await _recipeService.UpdateRecipeAsync(id, recipeCreateDto);
+            return NoContent();
         }
 
-        return NoContent();
-    }
-
-    [Authorize(Roles = "Admin")]
-    [HttpDelete("{id}")]
-    public async Task<IActionResult> DeleteRecipe(int id)
-    {
-        var recipe = await _context.Recipes.FindAsync(id);
-        if (recipe == null)
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteRecipe(int id)
         {
-            return NotFound();
+            _logger.LogInformation("DeleteRecipe called with id: {Id}", id);
+            await _recipeService.DeleteRecipeAsync(id);
+            return NoContent();
         }
-
-        _context.Recipes.Remove(recipe);
-        await _context.SaveChangesAsync();
-
-        return NoContent();
-    }
-
-    [Authorize]
-    [HttpPost("{id}/rate")]
-    public async Task<IActionResult> RateRecipe(int id, [FromBody] Rating rating)
-    {
-        var recipe = await _context.Recipes.FindAsync(id);
-        if (recipe == null)
-        {
-            return NotFound();
-        }
-
-        rating.RecipeId = id;
-        _context.Ratings.Add(rating);
-
-        await _context.SaveChangesAsync();
-
-        return Ok(recipe.StarRating);
     }
 }

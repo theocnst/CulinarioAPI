@@ -1,4 +1,5 @@
-﻿using CulinarioAPI.Models;
+﻿using CulinarioAPI.Models.RecipeModels;
+using CulinarioAPI.Models.UserModels;
 using Microsoft.EntityFrameworkCore;
 
 namespace CulinarioAPI.Data

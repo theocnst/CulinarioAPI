@@ -1,5 +1,5 @@
-﻿using CulinarioAPI.Dtos;
-using CulinarioAPI.Services;
+﻿using CulinarioAPI.Dtos.UserDtos;
+using CulinarioAPI.Services.UserServices;
 using Microsoft.AspNetCore.Mvc;
 
 [ApiController]

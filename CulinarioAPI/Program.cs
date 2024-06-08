@@ -1,7 +1,9 @@
 using CulinarioAPI;
 using CulinarioAPI.Data;
-using CulinarioAPI.Repositories;
-using CulinarioAPI.Services;
+using CulinarioAPI.Repositories.RecipeRepositories;
+using CulinarioAPI.Repositories.UserRepositories;
+using CulinarioAPI.Services.RecipeServices;
+using CulinarioAPI.Services.UserServices;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -53,10 +55,12 @@ builder.Services.AddAutoMapper(typeof(MappingProfile));
 // Register repositories
 builder.Services.AddScoped<IUserCredentialsRepository, UserCredentialsRepository>();
 builder.Services.AddScoped<IUserProfileRepository, UserProfileRepository>();
+builder.Services.AddScoped<IRecipeRepository, RecipeRepository>();
 
 // Register services
 builder.Services.AddScoped<IUserCredentialsService, UserCredentialsService>();
 builder.Services.AddScoped<IUserProfileService, UserProfileService>();
+builder.Services.AddScoped<IRecipeService, RecipeService>();
 
 var app = builder.Build();
 

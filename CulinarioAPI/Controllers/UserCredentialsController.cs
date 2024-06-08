@@ -1,9 +1,9 @@
 ﻿using Azure.Core;
 using Azure;
-using CulinarioAPI.Dtos;
-using CulinarioAPI.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using CulinarioAPI.Dtos.UserDtos;
+using CulinarioAPI.Services.UserServices;
 
 [ApiController]
 [Route("api/[controller]")]
