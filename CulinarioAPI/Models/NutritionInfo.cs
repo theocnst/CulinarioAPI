@@ -5,18 +5,15 @@ namespace CulinarioAPI.Models
 {
     public class NutritionInfo
     {
-        [Key]
-        public int NutritionInfoId { get; set; }
-
-        [ForeignKey("Recipe")]
+        [Key, ForeignKey("Recipe")]
         public int RecipeId { get; set; }
-        public double ServingSizeGrams { get; set; }
-        public double CaloriesPer100g { get; set; }
-        public double Carbs { get; set; }
-        public double Fats { get; set; }
-        public double Protein { get; set; }
-        public double Fiber { get; set; }
-        public double Sugar { get; set; }
+
+        public int Calories { get; set; }
+        public int Fats { get; set; }
+        public int Carbs { get; set; }
+        public int Protein { get; set; }
+        public int Fiber { get; set; }
+        public int Sugar { get; set; }
 
         public virtual Recipe Recipe { get; set; }
     }

@@ -17,7 +17,7 @@ namespace CulinarioAPI.Data
         public DbSet<Instruction> Instructions { get; set; }
         public DbSet<NutritionInfo> NutritionInfos { get; set; }
         public DbSet<LikedRecipe> LikedRecipes { get; set; }
-        public DbSet<Friend> Friends { get; set; }
+        public DbSet<Friendship> Friendships { get; set; }
         public DbSet<Rating> Ratings { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -46,11 +46,8 @@ namespace CulinarioAPI.Data
                 .OnDelete(DeleteBehavior.Cascade);
 
             // Recipe and NutritionInfo
-            modelBuilder.Entity<Recipe>()
-                .HasOne(r => r.NutritionInfo)
-                .WithOne(n => n.Recipe)
-                .HasForeignKey<NutritionInfo>(n => n.RecipeId)
-                .OnDelete(DeleteBehavior.Cascade);
+            modelBuilder.Entity<NutritionInfo>()
+                .HasKey(n => n.RecipeId);
 
             // UserCredentials and Recipes (Admin relationship)
             modelBuilder.Entity<UserCredentials>()
@@ -66,17 +63,17 @@ namespace CulinarioAPI.Data
                 .HasForeignKey(rt => rt.UserProfileId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            // UserProfile and Friends
+            // UserProfile and Friendships
             modelBuilder.Entity<UserProfile>()
-                .HasMany(up => up.Friends)
+                .HasMany(up => up.Friendships)
                 .WithOne(f => f.UserProfile)
-                .HasForeignKey(f => f.UserProfileId)
+                .HasForeignKey(f => f.UserId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            modelBuilder.Entity<Friend>()
+            modelBuilder.Entity<Friendship>()
                 .HasOne(f => f.FriendUserProfile)
                 .WithMany()
-                .HasForeignKey(f => f.FriendUserProfileId)
+                .HasForeignKey(f => f.FriendId)
                 .OnDelete(DeleteBehavior.Restrict);
 
             // Recipe and Ratings
@@ -99,6 +96,11 @@ namespace CulinarioAPI.Data
                 .WithMany()
                 .HasForeignKey(lr => lr.RecipeId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            // Ensure unique likes
+            modelBuilder.Entity<LikedRecipe>()
+                .HasIndex(lr => new { lr.UserId, lr.RecipeId })
+                .IsUnique();
         }
     }
 }
