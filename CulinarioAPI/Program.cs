@@ -4,6 +4,7 @@ using CulinarioAPI.Repositories.RecipeRepositories;
 using CulinarioAPI.Repositories.UserRepositories;
 using CulinarioAPI.Services.RecipeServices;
 using CulinarioAPI.Services.UserServices;
+using DateOnlyTimeOnly.AspNet.Converters;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -46,6 +47,18 @@ builder.Services.AddAuthentication(options =>
         ClockSkew = TimeSpan.Zero // Ensure no time skew issues
     };
 });
+
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.Converters.Add(new DateOnlyJsonConverter());
+        options.JsonSerializerOptions.Converters.Add(new TimeOnlyJsonConverter());
+    });
+
+builder.Services.AddSwaggerGen(options =>
+{
+    options.UseDateOnlyTimeOnlyStringConverters();
+}); 
 
 builder.Services.AddAuthorization();
 

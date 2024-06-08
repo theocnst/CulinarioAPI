@@ -61,7 +61,7 @@ namespace CulinarioAPI.Services.UserServices
                     LastName = string.Empty,
                     ProfilePicture = string.Empty,
                     Description = string.Empty,
-                    DateOfBirth = DateTime.MinValue
+                    DateOfBirth = DateOnly.MinValue
                 };
 
                 await _userProfileRepository.AddUserProfileAsync(userProfile);

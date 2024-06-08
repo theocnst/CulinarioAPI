@@ -6,6 +6,6 @@
         public string LastName { get; set; }
         public string ProfilePicture { get; set; }
         public string Description { get; set; }
-        public DateTime DateOfBirth { get; set; }
+        public DateOnly DateOfBirth { get; set; }
     }
 }

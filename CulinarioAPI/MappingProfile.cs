@@ -13,6 +13,7 @@ namespace CulinarioAPI
         {
             CreateMap<UserRegistrationDto, UserCredentials>();
             CreateMap<UserProfile, UserProfileDto>();
+            CreateMap<UserProfileDto, UserProfile>();
             CreateMap<UserProfileUpdateDto, UserProfile>();
 
             CreateMap<Recipe, RecipeDto>();
