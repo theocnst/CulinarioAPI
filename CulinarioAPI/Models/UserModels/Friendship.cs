@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace CulinarioAPI.Models.UserModels
 {
@@ -7,8 +8,11 @@ namespace CulinarioAPI.Models.UserModels
         [Key]
         public int FriendshipId { get; set; }
 
-        public int UserId { get; set; }
-        public int FriendId { get; set; }
+        [ForeignKey("UserProfile")]
+        public string Username { get; set; }
+
+        [ForeignKey("FriendUserProfile")]
+        public string FriendUsername { get; set; }
         public string Status { get; set; }
 
         public virtual UserProfile UserProfile { get; set; }

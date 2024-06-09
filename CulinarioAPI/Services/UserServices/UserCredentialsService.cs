@@ -43,6 +43,12 @@ namespace CulinarioAPI.Services.UserServices
                     return false;
                 }
 
+                if (await _userCredentialsRepository.UsernameExistsAsync(userDto.Username))
+                {
+                    _logger.LogWarning("Registration failed: Username already exists.");
+                    return false;
+                }
+
                 var user = _mapper.Map<UserCredentials>(userDto);
                 user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(userDto.Password);
 
@@ -51,7 +57,7 @@ namespace CulinarioAPI.Services.UserServices
 
                 var userProfile = new UserProfile
                 {
-                    UserId = user.UserId,
+                    Username = user.Username,
                     FirstName = string.Empty,
                     LastName = string.Empty,
                     ProfilePicture = string.Empty,
@@ -69,6 +75,11 @@ namespace CulinarioAPI.Services.UserServices
                 _logger.LogError(ex, "An error occurred during registration for email: {Email}", userDto.Email);
                 return false;
             }
+        }
+
+        public async Task<bool> IsUsernameUniqueAsync(string username)
+        {
+            return !await _userCredentialsRepository.UsernameExistsAsync(username);
         }
 
         public async Task<string> AuthenticateUserAsync(AuthRequestDto authRequest)
@@ -141,7 +152,7 @@ namespace CulinarioAPI.Services.UserServices
             {
                 new Claim(JwtRegisteredClaimNames.Sub, user.Email),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                new Claim(ClaimTypes.NameIdentifier, user.UserId.ToString())
+                new Claim(ClaimTypes.NameIdentifier, user.Username.ToString())
             };
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));

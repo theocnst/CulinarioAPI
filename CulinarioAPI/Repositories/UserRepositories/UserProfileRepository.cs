@@ -15,9 +15,9 @@ namespace CulinarioAPI.Repositories.UserRepositories
             _logger = logger;
         }
 
-        public async Task<UserProfile> GetUserProfileByIdAsync(int id)
+        public async Task<UserProfile> GetUserProfileByUsernameAsync(string username)
         {
-            _logger.LogInformation("GetUserProfileByIdAsync called with id: {Id}", id);
+            _logger.LogInformation("GetUserProfileByUsernameAsync called with username: {Username}", username);
 
             try
             {
@@ -25,72 +25,73 @@ namespace CulinarioAPI.Repositories.UserRepositories
                     .Include(p => p.Ratings)
                     .Include(p => p.Friendships)
                     .Include(p => p.LikedRecipes)
-                    .SingleOrDefaultAsync(p => p.UserId == id);
+                    .SingleOrDefaultAsync(p => p.Username == username);
 
                 if (profile == null)
                 {
-                    _logger.LogWarning("UserProfile not found with id: {Id}", id);
+                    _logger.LogWarning("UserProfile not found with username: {Username}", username);
                 }
                 else
                 {
-                    _logger.LogInformation("UserProfile found with id: {Id}", id);
+                    _logger.LogInformation("UserProfile found with username: {Username}", username);
                 }
                 return profile;
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "An error occurred while getting UserProfile by id: {Id}", id);
+                _logger.LogError(ex, "An error occurred while getting UserProfile by username: {Username}", username);
                 throw;
             }
         }
 
+
         public async Task AddUserProfileAsync(UserProfile profile)
         {
-            _logger.LogInformation("AddUserProfileAsync called for UserId: {UserId}", profile.UserId);
+            _logger.LogInformation("AddUserProfileAsync called for username: {Username}", profile.Username);
 
             try
             {
                 _context.UserProfiles.Add(profile);
                 await _context.SaveChangesAsync();
-                _logger.LogInformation("UserProfile added successfully for UserId: {UserId}", profile.UserId);
+                _logger.LogInformation("UserProfile added successfully for username: {Username}", profile.Username);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "An error occurred while adding UserProfile for UserId: {UserId}", profile.UserId);
+                _logger.LogError(ex, "An error occurred while adding UserProfile for username: {Username}", profile.Username);
                 throw;
             }
         }
 
         public async Task UpdateUserProfileAsync(UserProfile profile)
         {
-            _logger.LogInformation("UpdateUserProfileAsync called for UserId: {UserId}", profile.UserId);
+            _logger.LogInformation("UpdateUserProfileAsync called for username: {Username}", profile.Username);
 
             try
             {
                 _context.Entry(profile).State = EntityState.Modified;
                 await _context.SaveChangesAsync();
-                _logger.LogInformation("UserProfile updated successfully for UserId: {UserId}", profile.UserId);
+                _logger.LogInformation("UserProfile updated successfully for username: {Username}", profile.Username);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "An error occurred while updating UserProfile for UserId: {UserId}", profile.UserId);
+                _logger.LogError(ex, "An error occurred while updating UserProfile for username: {Username}", profile.Username);
                 throw;
             }
         }
 
-        public async Task<bool> UserProfileExistsAsync(int id)
+        public async Task<bool> UserProfileExistsAsync(string username)
         {
-            _logger.LogInformation("UserProfileExistsAsync called with id: {Id}", id);
+            _logger.LogInformation("UserProfileExistsAsync called with username: {Username}", username);
 
             try
             {
-                var exists = await _context.UserProfiles.AnyAsync(p => p.UserId == id);
-                _logger.LogInformation("UserProfile exists: {Exists} for id: {Id}", exists, id);
+                var exists = await _context.UserProfiles.AnyAsync(p => p.Username == username);
+                _logger.LogInformation("UserProfile exists: {Exists} for username: {Username}", exists, username);
                 return exists;
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "An error occurred while checking if UserProfile exists: {Id}", id);
+                _logger.LogError(ex, "An error occurred while checking if UserProfile exists: {Username}", username);
                 throw;
             }
         }

@@ -26,8 +26,6 @@ namespace CulinarioAPI.Migrations
                 name: "UserCredentials",
                 columns: table => new
                 {
-                    UserId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
                     Username = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     PasswordHash = table.Column<string>(type: "nvarchar(max)", nullable: false),
@@ -35,7 +33,7 @@ namespace CulinarioAPI.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_UserCredentials", x => x.UserId);
+                    table.PrimaryKey("PK_UserCredentials", x => x.Username);
                 });
 
             migrationBuilder.CreateTable(
@@ -53,7 +51,7 @@ namespace CulinarioAPI.Migrations
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     RecipeType = table.Column<int>(type: "int", nullable: false),
                     CountryName = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    AdminId = table.Column<int>(type: "int", nullable: false)
+                    AdminUserame = table.Column<string>(type: "nvarchar(50)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -65,10 +63,10 @@ namespace CulinarioAPI.Migrations
                         principalColumn: "CountryName",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_Recipes_UserCredentials_AdminId",
-                        column: x => x.AdminId,
+                        name: "FK_Recipes_UserCredentials_AdminUserame",
+                        column: x => x.AdminUserame,
                         principalTable: "UserCredentials",
-                        principalColumn: "UserId",
+                        principalColumn: "Username",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -76,7 +74,7 @@ namespace CulinarioAPI.Migrations
                 name: "UserProfiles",
                 columns: table => new
                 {
-                    UserId = table.Column<int>(type: "int", nullable: false),
+                    Username = table.Column<string>(type: "nvarchar(50)", nullable: false),
                     FirstName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     LastName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     ProfilePicture = table.Column<string>(type: "nvarchar(max)", nullable: false),
@@ -85,12 +83,12 @@ namespace CulinarioAPI.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_UserProfiles", x => x.UserId);
+                    table.PrimaryKey("PK_UserProfiles", x => x.Username);
                     table.ForeignKey(
-                        name: "FK_UserProfiles_UserCredentials_UserId",
-                        column: x => x.UserId,
+                        name: "FK_UserProfiles_UserCredentials_Username",
+                        column: x => x.Username,
                         principalTable: "UserCredentials",
-                        principalColumn: "UserId",
+                        principalColumn: "Username",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -166,24 +164,24 @@ namespace CulinarioAPI.Migrations
                 {
                     FriendshipId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    UserId = table.Column<int>(type: "int", nullable: false),
-                    FriendId = table.Column<int>(type: "int", nullable: false),
+                    Username = table.Column<string>(type: "nvarchar(50)", nullable: false),
+                    FriendUsername = table.Column<string>(type: "nvarchar(50)", nullable: false),
                     Status = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Friendships", x => x.FriendshipId);
                     table.ForeignKey(
-                        name: "FK_Friendships_UserProfiles_FriendId",
-                        column: x => x.FriendId,
+                        name: "FK_Friendships_UserProfiles_FriendUsername",
+                        column: x => x.FriendUsername,
                         principalTable: "UserProfiles",
-                        principalColumn: "UserId",
+                        principalColumn: "Username",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_Friendships_UserProfiles_UserId",
-                        column: x => x.UserId,
+                        name: "FK_Friendships_UserProfiles_Username",
+                        column: x => x.Username,
                         principalTable: "UserProfiles",
-                        principalColumn: "UserId",
+                        principalColumn: "Username",
                         onDelete: ReferentialAction.Restrict);
                 });
 
@@ -193,7 +191,7 @@ namespace CulinarioAPI.Migrations
                 {
                     LikedRecipeId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    UserId = table.Column<int>(type: "int", nullable: false),
+                    Username = table.Column<string>(type: "nvarchar(50)", nullable: false),
                     RecipeId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
@@ -206,10 +204,10 @@ namespace CulinarioAPI.Migrations
                         principalColumn: "RecipeId",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_LikedRecipes_UserProfiles_UserId",
-                        column: x => x.UserId,
+                        name: "FK_LikedRecipes_UserProfiles_Username",
+                        column: x => x.Username,
                         principalTable: "UserProfiles",
-                        principalColumn: "UserId",
+                        principalColumn: "Username",
                         onDelete: ReferentialAction.Restrict);
                 });
 
@@ -219,7 +217,7 @@ namespace CulinarioAPI.Migrations
                 {
                     RatingId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    UserProfileId = table.Column<int>(type: "int", nullable: false),
+                    Username = table.Column<string>(type: "nvarchar(50)", nullable: false),
                     RecipeId = table.Column<int>(type: "int", nullable: false),
                     Score = table.Column<double>(type: "float", nullable: false)
                 },
@@ -233,22 +231,22 @@ namespace CulinarioAPI.Migrations
                         principalColumn: "RecipeId",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Ratings_UserProfiles_UserProfileId",
-                        column: x => x.UserProfileId,
+                        name: "FK_Ratings_UserProfiles_Username",
+                        column: x => x.Username,
                         principalTable: "UserProfiles",
-                        principalColumn: "UserId",
+                        principalColumn: "Username",
                         onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Friendships_FriendId",
+                name: "IX_Friendships_FriendUsername",
                 table: "Friendships",
-                column: "FriendId");
+                column: "FriendUsername");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Friendships_UserId",
+                name: "IX_Friendships_Username",
                 table: "Friendships",
-                column: "UserId");
+                column: "Username");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Ingredients_RecipeId",
@@ -266,9 +264,9 @@ namespace CulinarioAPI.Migrations
                 column: "RecipeId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_LikedRecipes_UserId_RecipeId",
+                name: "IX_LikedRecipes_Username_RecipeId",
                 table: "LikedRecipes",
-                columns: new[] { "UserId", "RecipeId" },
+                columns: new[] { "Username", "RecipeId" },
                 unique: true);
 
             migrationBuilder.CreateIndex(
@@ -277,14 +275,14 @@ namespace CulinarioAPI.Migrations
                 column: "RecipeId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Ratings_UserProfileId",
+                name: "IX_Ratings_Username",
                 table: "Ratings",
-                column: "UserProfileId");
+                column: "Username");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Recipes_AdminId",
+                name: "IX_Recipes_AdminUserame",
                 table: "Recipes",
-                column: "AdminId");
+                column: "AdminUserame");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Recipes_CountryName",

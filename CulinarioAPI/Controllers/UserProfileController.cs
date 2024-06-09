@@ -15,50 +15,50 @@ public class UserProfileController : ControllerBase
         _logger = logger;
     }
 
-    [HttpGet("{id}")]
-    public async Task<IActionResult> GetUserProfile(int id)
+    [HttpGet("{username}")]
+    public async Task<IActionResult> GetUserProfile(string username)
     {
-        _logger.LogInformation("GetUserProfile called with id: {Id}", id);
+        _logger.LogInformation("GetUserProfile called with username: {Username}", username);
 
         try
         {
-            var profile = await _userProfileService.GetUserProfileAsync(id);
+            var profile = await _userProfileService.GetUserProfileAsync(username);
 
             if (profile == null)
             {
-                _logger.LogWarning("UserProfile not found for id: {Id}", id);
+                _logger.LogWarning("UserProfile not found for username: {Username}", username);
                 return NotFound();
             }
 
-            _logger.LogInformation("UserProfile found for id: {Id}", id);
+            _logger.LogInformation("UserProfile found for username: {Username}", username);
             return Ok(profile);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "An error occurred while getting UserProfile for id: {Id}", id);
+            _logger.LogError(ex, "An error occurred while getting UserProfile for username: {Username}", username);
             return StatusCode(500, "Internal server error");
         }
     }
 
-    [HttpPut("{id}")]
-    public async Task<IActionResult> UpdateUserProfile(int id, [FromBody] UserProfileUpdateDto profileDto)
+    [HttpPut("{username}")]
+    public async Task<IActionResult> UpdateUserProfile(string username, [FromBody] UserProfileUpdateDto profileDto)
     {
-        _logger.LogInformation("UpdateUserProfile called with id: {Id}", id);
+        _logger.LogInformation("UpdateUserProfile called with username: {Username}", username);
 
         try
         {
-            if (!await _userProfileService.UpdateUserProfileAsync(id, profileDto))
+            if (!await _userProfileService.UpdateUserProfileAsync(username, profileDto))
             {
-                _logger.LogWarning("Update failed, UserProfile not found for id: {Id}", id);
+                _logger.LogWarning("Update failed, UserProfile not found for username: {Username}", username);
                 return NotFound();
             }
 
-            _logger.LogInformation("UserProfile updated for id: {Id}", id);
+            _logger.LogInformation("UserProfile updated for username: {Username}", username);
             return NoContent();
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "An error occurred while updating UserProfile for id: {Id}", id);
+            _logger.LogError(ex, "An error occurred while updating UserProfile for username: {Username}", username);
             return StatusCode(500, "Internal server error");
         }
     }

@@ -10,7 +10,7 @@ namespace CulinarioAPI.Models.RecipeModels
         public int RatingId { get; set; }
 
         [ForeignKey("UserProfile")]
-        public int UserProfileId { get; set; }
+        public string Username { get; set; }
 
         [ForeignKey("Recipe")]
         public int RecipeId { get; set; }

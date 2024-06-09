@@ -128,14 +128,15 @@ namespace CulinarioAPI.Migrations
                     b.Property<double>("Score")
                         .HasColumnType("float");
 
-                    b.Property<int>("UserProfileId")
-                        .HasColumnType("int");
+                    b.Property<string>("Username")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(50)");
 
                     b.HasKey("RatingId");
 
                     b.HasIndex("RecipeId");
 
-                    b.HasIndex("UserProfileId");
+                    b.HasIndex("Username");
 
                     b.ToTable("Ratings");
                 });
@@ -148,8 +149,9 @@ namespace CulinarioAPI.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("RecipeId"));
 
-                    b.Property<int>("AdminId")
-                        .HasColumnType("int");
+                    b.Property<string>("AdminUserame")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<int>("CookTime")
                         .HasColumnType("int");
@@ -184,7 +186,7 @@ namespace CulinarioAPI.Migrations
 
                     b.HasKey("RecipeId");
 
-                    b.HasIndex("AdminId");
+                    b.HasIndex("AdminUserame");
 
                     b.HasIndex("CountryName");
 
@@ -199,21 +201,23 @@ namespace CulinarioAPI.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("FriendshipId"));
 
-                    b.Property<int>("FriendId")
-                        .HasColumnType("int");
+                    b.Property<string>("FriendUsername")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("Status")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
+                    b.Property<string>("Username")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(50)");
 
                     b.HasKey("FriendshipId");
 
-                    b.HasIndex("FriendId");
+                    b.HasIndex("FriendUsername");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("Username");
 
                     b.ToTable("Friendships");
                 });
@@ -229,14 +233,15 @@ namespace CulinarioAPI.Migrations
                     b.Property<int>("RecipeId")
                         .HasColumnType("int");
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
+                    b.Property<string>("Username")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(50)");
 
                     b.HasKey("LikedRecipeId");
 
                     b.HasIndex("RecipeId");
 
-                    b.HasIndex("UserId", "RecipeId")
+                    b.HasIndex("Username", "RecipeId")
                         .IsUnique();
 
                     b.ToTable("LikedRecipes");
@@ -244,11 +249,9 @@ namespace CulinarioAPI.Migrations
 
             modelBuilder.Entity("CulinarioAPI.Models.UserModels.UserCredentials", b =>
                 {
-                    b.Property<int>("UserId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("UserId"));
+                    b.Property<string>("Username")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("Email")
                         .IsRequired()
@@ -261,20 +264,15 @@ namespace CulinarioAPI.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Username")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.HasKey("UserId");
+                    b.HasKey("Username");
 
                     b.ToTable("UserCredentials");
                 });
 
             modelBuilder.Entity("CulinarioAPI.Models.UserModels.UserProfile", b =>
                 {
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
+                    b.Property<string>("Username")
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<DateOnly>("DateOfBirth")
                         .HasColumnType("date");
@@ -295,7 +293,7 @@ namespace CulinarioAPI.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("UserId");
+                    b.HasKey("Username");
 
                     b.ToTable("UserProfiles");
                 });
@@ -343,7 +341,7 @@ namespace CulinarioAPI.Migrations
 
                     b.HasOne("CulinarioAPI.Models.UserModels.UserProfile", "UserProfile")
                         .WithMany("Ratings")
-                        .HasForeignKey("UserProfileId")
+                        .HasForeignKey("Username")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
@@ -356,7 +354,7 @@ namespace CulinarioAPI.Migrations
                 {
                     b.HasOne("CulinarioAPI.Models.UserModels.UserCredentials", "Admin")
                         .WithMany("Recipes")
-                        .HasForeignKey("AdminId")
+                        .HasForeignKey("AdminUserame")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -375,13 +373,13 @@ namespace CulinarioAPI.Migrations
                 {
                     b.HasOne("CulinarioAPI.Models.UserModels.UserProfile", "FriendUserProfile")
                         .WithMany()
-                        .HasForeignKey("FriendId")
+                        .HasForeignKey("FriendUsername")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("CulinarioAPI.Models.UserModels.UserProfile", "UserProfile")
                         .WithMany("Friendships")
-                        .HasForeignKey("UserId")
+                        .HasForeignKey("Username")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
@@ -400,7 +398,7 @@ namespace CulinarioAPI.Migrations
 
                     b.HasOne("CulinarioAPI.Models.UserModels.UserProfile", "UserProfile")
                         .WithMany("LikedRecipes")
-                        .HasForeignKey("UserId")
+                        .HasForeignKey("Username")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
@@ -413,7 +411,7 @@ namespace CulinarioAPI.Migrations
                 {
                     b.HasOne("CulinarioAPI.Models.UserModels.UserCredentials", "UserCredentials")
                         .WithOne("UserProfile")
-                        .HasForeignKey("CulinarioAPI.Models.UserModels.UserProfile", "UserId")
+                        .HasForeignKey("CulinarioAPI.Models.UserModels.UserProfile", "Username")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

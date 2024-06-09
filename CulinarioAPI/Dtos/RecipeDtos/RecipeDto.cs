@@ -12,7 +12,7 @@ namespace CulinarioAPI.Dtos.RecipeDtos
         public int TotalTime { get; set; }
         public int Servings { get; set; }
         public string Description { get; set; }
-        public int AdminId { get; set; }
+        public string AdminUsername { get; set; }
         public string CountryName { get; set; }
         public RecipeType RecipeType { get; set; }
         public NutritionInfoDto NutritionInfo { get; set; }

@@ -4,7 +4,7 @@ namespace CulinarioAPI.Services.UserServices
 {
     public interface IUserProfileService
     {
-        Task<UserProfileDto> GetUserProfileAsync(int id);
-        Task<bool> UpdateUserProfileAsync(int id, UserProfileUpdateDto profileDto);
+        Task<UserProfileDto> GetUserProfileAsync(string username);
+        Task<bool> UpdateUserProfileAsync(string username, UserProfileUpdateDto profileDto);
     }
 }

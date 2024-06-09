@@ -22,7 +22,7 @@ namespace CulinarioAPI.Models.RecipeModels
         public string CountryName{ get; set; }
 
         [ForeignKey("UserCredentials")]
-        public int AdminId { get; set; }
+        public string AdminUserame { get; set; }
         public virtual UserCredentials Admin { get; set; }
 
         public virtual ICollection<Instruction> Instructions { get; set; }

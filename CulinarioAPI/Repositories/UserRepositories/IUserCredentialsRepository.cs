@@ -7,5 +7,6 @@ namespace CulinarioAPI.Repositories.UserRepositories
         Task<UserCredentials> GetUserByEmailAsync(string email);
         Task AddUserAsync(UserCredentials user);
         Task<bool> UserExistsAsync(string email);
+        Task<bool> UsernameExistsAsync(string username);
     }
 }

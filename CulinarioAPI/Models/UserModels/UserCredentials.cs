@@ -6,8 +6,6 @@ namespace CulinarioAPI.Models.UserModels
     public class UserCredentials
     {
         [Key]
-        public int UserId { get; set; }
-
         [Required]
         [MaxLength(50)]
         public string Username { get; set; }

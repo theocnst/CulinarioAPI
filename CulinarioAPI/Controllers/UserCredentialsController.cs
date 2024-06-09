@@ -25,6 +25,12 @@ public class UserCredentialsController : ControllerBase
 
         try
         {
+            if (!await _userCredentialsService.IsUsernameUniqueAsync(userDto.Username))
+            {
+                _logger.LogWarning("Registration failed: Username already exists.");
+                return BadRequest("Username already exists.");
+            }
+
             if (!await _userCredentialsService.RegisterUserAsync(userDto))
             {
                 _logger.LogWarning("Registration failed: Email already exists.");
@@ -49,6 +55,7 @@ public class UserCredentialsController : ControllerBase
             return StatusCode(500, "Internal server error");
         }
     }
+
 
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] AuthRequestDto request)

@@ -7,7 +7,7 @@ namespace CulinarioAPI.Models.UserModels
     public class UserProfile
     {
         [Key, ForeignKey("UserCredentials")]
-        public int UserId { get; set; }
+        public string Username { get; set; }
 
         public string FirstName { get; set; }
         public string LastName { get; set; }

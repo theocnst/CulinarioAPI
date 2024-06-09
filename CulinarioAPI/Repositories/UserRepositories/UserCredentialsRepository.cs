@@ -72,5 +72,22 @@ namespace CulinarioAPI.Repositories.UserRepositories
                 throw;
             }
         }
+
+        public async Task<bool> UsernameExistsAsync(string username)
+        {
+            _logger.LogInformation("UsernameExistsAsync called with username: {Username}", username);
+
+            try
+            {
+                var exists = await _context.UserCredentials.AnyAsync(u => u.Username == username);
+                _logger.LogInformation("Username exists: {Exists} for username: {Username}", exists, username);
+                return exists;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred while checking if username exists: {Username}", username);
+                throw;
+            }
+        }
     }
 }
