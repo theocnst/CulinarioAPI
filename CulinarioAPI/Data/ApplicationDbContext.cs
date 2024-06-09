@@ -21,6 +21,7 @@ namespace CulinarioAPI.Data
         public DbSet<LikedRecipe> LikedRecipes { get; set; }
         public DbSet<Friendship> Friendships { get; set; }
         public DbSet<Rating> Ratings { get; set; }
+        public DbSet<Country> Countries { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -103,6 +104,13 @@ namespace CulinarioAPI.Data
             modelBuilder.Entity<LikedRecipe>()
                 .HasIndex(lr => new { lr.UserId, lr.RecipeId })
                 .IsUnique();
+
+            // Recipe and Country
+            modelBuilder.Entity<Recipe>()
+                .HasOne(r => r.Country)
+                .WithMany(c => c.Recipes)
+                .HasForeignKey(r => r.CountryId)
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

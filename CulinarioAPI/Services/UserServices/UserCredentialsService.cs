@@ -1,16 +1,11 @@
 ﻿using AutoMapper;
 using CulinarioAPI.Dtos.UserDtos;
-using CulinarioAPI.Models;
 using CulinarioAPI.Models.UserModels;
 using CulinarioAPI.Repositories.UserRepositories;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
-using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace CulinarioAPI.Services.UserServices
 {

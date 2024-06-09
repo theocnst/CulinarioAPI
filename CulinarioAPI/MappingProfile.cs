@@ -24,6 +24,8 @@ namespace CulinarioAPI
             CreateMap<InstructionCreateDto, Instruction>();
             CreateMap<NutritionInfo, NutritionInfoDto>().ReverseMap();
             CreateMap<NutritionInfoCreateDto, NutritionInfo>();
+
+            CreateMap<Country, CountryDto>().ReverseMap();
         }
     }
 }

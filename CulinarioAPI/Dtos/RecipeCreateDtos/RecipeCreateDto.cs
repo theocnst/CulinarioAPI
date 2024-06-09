@@ -1,4 +1,6 @@
-﻿namespace CulinarioAPI.Dtos.RecipeCreateDtos
+﻿using CulinarioAPI.Models.RecipeModels;
+
+namespace CulinarioAPI.Dtos.RecipeCreateDtos
 {
     public class RecipeCreateDto
     {
@@ -10,6 +12,8 @@
         public int Servings { get; set; }
         public string Description { get; set; }
         public int AdminId { get; set; }
+        public int CountryId { get; set; }
+        public RecipeType RecipeType { get; set; }
         public List<IngredientCreateDto> Ingredients { get; set; }
         public List<InstructionCreateDto> Instructions { get; set; }
         public NutritionInfoCreateDto NutritionInfo { get; set; }

@@ -16,6 +16,10 @@ namespace CulinarioAPI.Models.RecipeModels
         public int TotalTime { get; set; }
         public int Servings { get; set; }
         public string Description { get; set; }
+        public RecipeType RecipeType { get; set; }
+
+        [ForeignKey("Country")]
+        public int CountryId { get; set; }
 
         [ForeignKey("UserCredentials")]
         public int AdminId { get; set; }
@@ -25,6 +29,7 @@ namespace CulinarioAPI.Models.RecipeModels
         public virtual ICollection<Ingredient> Ingredients { get; set; }
         public virtual NutritionInfo NutritionInfo { get; set; }
         public virtual ICollection<Rating> Ratings { get; set; }
+        public virtual Country Country { get; set; }
 
         [NotMapped]
         public double StarRating => Ratings.Any() ? Ratings.Average(r => r.Score) : 0;
