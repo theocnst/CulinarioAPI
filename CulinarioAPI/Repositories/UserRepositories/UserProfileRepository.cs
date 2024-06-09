@@ -1,4 +1,5 @@
 ﻿using CulinarioAPI.Data;
+using CulinarioAPI.Dtos.UserDtos;
 using CulinarioAPI.Models.UserModels;
 using Microsoft.EntityFrameworkCore;
 
@@ -94,6 +95,49 @@ namespace CulinarioAPI.Repositories.UserRepositories
                 _logger.LogError(ex, "An error occurred while checking if UserProfile exists: {Username}", username);
                 throw;
             }
+        }
+        public async Task<UserDetailsDto> GetUserDetailsByUsernameAsync(string username)
+        {
+            _logger.LogInformation("GetUserDetailsByUsernameAsync called with username: {Username}", username);
+
+            var userProfile = await _context.UserProfiles
+                .Include(p => p.Friendships)
+                    .ThenInclude(f => f.FriendUserProfile)
+                .Include(p => p.LikedRecipes)
+                    .ThenInclude(lr => lr.Recipe)
+                .AsSplitQuery()
+                .SingleOrDefaultAsync(p => p.Username == username);
+
+            if (userProfile == null)
+            {
+                _logger.LogWarning("UserProfile not found for username: {Username}", username);
+                return null;
+            }
+
+            var userDetails = new UserDetailsDto
+            {
+                Username = userProfile.Username,
+                FirstName = userProfile.FirstName,
+                LastName = userProfile.LastName,
+                ProfilePicture = userProfile.ProfilePicture,
+                Description = userProfile.Description,
+                DateOfBirth = userProfile.DateOfBirth,
+                Friends = userProfile.Friendships
+                    .Where(f => f.FriendUserProfile != null) // Ensure no null FriendUserProfile
+                    .Select(f => new FriendDto
+                    {
+                        Username = f.FriendUserProfile.Username
+                    }).ToList(),
+                LikedRecipes = userProfile.LikedRecipes
+                    .Where(lr => lr.Recipe != null) // Ensure no null Recipe
+                    .Select(lr => new LikedRecipeDto
+                    {
+                        Name = lr.Recipe.Name
+                    }).ToList()
+            };
+
+            _logger.LogInformation("UserDetailsDto created for username: {Username}", username);
+            return userDetails;
         }
     }
 }

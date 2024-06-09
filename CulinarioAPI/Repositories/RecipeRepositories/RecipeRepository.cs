@@ -26,6 +26,7 @@ namespace CulinarioAPI.Repositories.RecipeRepositories
                 .Include(r => r.Instructions)
                 .Include(r => r.NutritionInfo)
                 .Include(r => r.Country)
+                .Include(r => r.Admin)
                 .ToListAsync();
         }
 
@@ -37,6 +38,7 @@ namespace CulinarioAPI.Repositories.RecipeRepositories
                 .Include(r => r.Instructions)
                 .Include(r => r.NutritionInfo)
                 .Include(r => r.Country)
+                .Include(r => r.Admin)
                 .SingleOrDefaultAsync(r => r.RecipeId == id);
         }
 

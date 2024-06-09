@@ -1,8 +1,8 @@
 ﻿using AutoMapper;
 using CulinarioAPI.Dtos.RecipeCreateDtos;
 using CulinarioAPI.Dtos.RecipeDtos;
-using CulinarioAPI.Models.RecipeModels;
 using CulinarioAPI.Dtos.UserDtos;
+using CulinarioAPI.Models.RecipeModels;
 using CulinarioAPI.Models.UserModels;
 
 namespace CulinarioAPI
@@ -11,20 +11,33 @@ namespace CulinarioAPI
     {
         public MappingProfile()
         {
+            // User Mappings
             CreateMap<UserRegistrationDto, UserCredentials>();
             CreateMap<UserProfile, UserProfileDto>();
             CreateMap<UserProfileDto, UserProfile>();
             CreateMap<UserProfileUpdateDto, UserProfile>();
 
-            CreateMap<Recipe, RecipeDto>();
+            // Recipe Mappings
+            CreateMap<Recipe, RecipeDto>()
+                .ForMember(dest => dest.RecipeType, opt => opt.MapFrom(src => new RecipeTypeDto { Name = src.RecipeType.ToString() }))
+                .ForMember(dest => dest.AdminUsername, opt => opt.MapFrom(src => src.Admin.Username))
+                .ForMember(dest => dest.NutritionInfo, opt => opt.MapFrom(src => src.NutritionInfo));
+
             CreateMap<RecipeCreateDto, Recipe>();
+
+            // Ingredient Mappings
             CreateMap<Ingredient, IngredientDto>().ReverseMap();
             CreateMap<IngredientCreateDto, Ingredient>();
+
+            // Instruction Mappings
             CreateMap<Instruction, InstructionDto>().ReverseMap();
             CreateMap<InstructionCreateDto, Instruction>();
+
+            // NutritionInfo Mappings
             CreateMap<NutritionInfo, NutritionInfoDto>().ReverseMap();
             CreateMap<NutritionInfoCreateDto, NutritionInfo>();
 
+            // Country Mappings
             CreateMap<Country, CountryDto>().ReverseMap();
         }
     }

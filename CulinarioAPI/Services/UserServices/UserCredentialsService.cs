@@ -152,7 +152,8 @@ namespace CulinarioAPI.Services.UserServices
             {
                 new Claim(JwtRegisteredClaimNames.Sub, user.Email),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                new Claim(ClaimTypes.NameIdentifier, user.Username.ToString())
+                new Claim(ClaimTypes.NameIdentifier, user.Username), // Keep this claim for consistency
+                new Claim("username", user.Username) // Add a new claim for username
             };
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));

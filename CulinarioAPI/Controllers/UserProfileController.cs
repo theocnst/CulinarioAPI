@@ -40,6 +40,31 @@ public class UserProfileController : ControllerBase
         }
     }
 
+    [HttpGet("{username}/details")]
+    public async Task<IActionResult> GetUserDetails(string username)
+    {
+        _logger.LogInformation("GetUserDetails called with username: {Username}", username);
+
+        try
+        {
+            var details = await _userProfileService.GetUserDetailsAsync(username);
+
+            if (details == null)
+            {
+                _logger.LogWarning("User details not found for username: {Username}", username);
+                return NotFound();
+            }
+
+            _logger.LogInformation("User details found for username: {Username}", username);
+            return Ok(details);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "An error occurred while getting user details for username: {Username}", username);
+            return StatusCode(500, "Internal server error");
+        }
+    }
+
     [HttpPut("{username}")]
     public async Task<IActionResult> UpdateUserProfile(string username, [FromBody] UserProfileUpdateDto profileDto)
     {

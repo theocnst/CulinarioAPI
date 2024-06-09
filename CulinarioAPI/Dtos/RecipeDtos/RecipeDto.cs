@@ -14,7 +14,7 @@ namespace CulinarioAPI.Dtos.RecipeDtos
         public string Description { get; set; }
         public string AdminUsername { get; set; }
         public string CountryName { get; set; }
-        public RecipeType RecipeType { get; set; }
+        public RecipeTypeDto RecipeType { get; set; }
         public NutritionInfoDto NutritionInfo { get; set; }
         public List<IngredientDto> Ingredients { get; set; }
         public List<InstructionDto> Instructions { get; set; }

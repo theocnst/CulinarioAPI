@@ -56,7 +56,7 @@ namespace CulinarioAPI.Data
             modelBuilder.Entity<UserCredentials>()
                 .HasMany(uc => uc.Recipes)
                 .WithOne(r => r.Admin)
-                .HasForeignKey(r => r.AdminUserame)
+                .HasForeignKey(r => r.AdminUsername)
                 .OnDelete(DeleteBehavior.Cascade);
 
             // UserProfile and Ratings

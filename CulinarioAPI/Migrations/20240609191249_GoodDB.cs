@@ -51,7 +51,7 @@ namespace CulinarioAPI.Migrations
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     RecipeType = table.Column<int>(type: "int", nullable: false),
                     CountryName = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    AdminUserame = table.Column<string>(type: "nvarchar(50)", nullable: false)
+                    AdminUsername = table.Column<string>(type: "nvarchar(50)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -63,8 +63,8 @@ namespace CulinarioAPI.Migrations
                         principalColumn: "CountryName",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_Recipes_UserCredentials_AdminUserame",
-                        column: x => x.AdminUserame,
+                        name: "FK_Recipes_UserCredentials_AdminUsername",
+                        column: x => x.AdminUsername,
                         principalTable: "UserCredentials",
                         principalColumn: "Username",
                         onDelete: ReferentialAction.Cascade);
@@ -280,9 +280,9 @@ namespace CulinarioAPI.Migrations
                 column: "Username");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Recipes_AdminUserame",
+                name: "IX_Recipes_AdminUsername",
                 table: "Recipes",
-                column: "AdminUserame");
+                column: "AdminUsername");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Recipes_CountryName",

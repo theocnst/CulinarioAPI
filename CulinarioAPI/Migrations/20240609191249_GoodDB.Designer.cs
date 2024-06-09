@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CulinarioAPI.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240609131722_GoodDB")]
+    [Migration("20240609191249_GoodDB")]
     partial class GoodDB
     {
         /// <inheritdoc />
@@ -152,7 +152,7 @@ namespace CulinarioAPI.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("RecipeId"));
 
-                    b.Property<string>("AdminUserame")
+                    b.Property<string>("AdminUsername")
                         .IsRequired()
                         .HasColumnType("nvarchar(50)");
 
@@ -189,7 +189,7 @@ namespace CulinarioAPI.Migrations
 
                     b.HasKey("RecipeId");
 
-                    b.HasIndex("AdminUserame");
+                    b.HasIndex("AdminUsername");
 
                     b.HasIndex("CountryName");
 
@@ -357,7 +357,7 @@ namespace CulinarioAPI.Migrations
                 {
                     b.HasOne("CulinarioAPI.Models.UserModels.UserCredentials", "Admin")
                         .WithMany("Recipes")
-                        .HasForeignKey("AdminUserame")
+                        .HasForeignKey("AdminUsername")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

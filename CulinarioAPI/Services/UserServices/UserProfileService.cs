@@ -40,6 +40,20 @@ namespace CulinarioAPI.Services.UserServices
                 return null;
             }
         }
+        public async Task<UserDetailsDto> GetUserDetailsAsync(string username)
+        {
+            _logger.LogInformation("GetUserDetailsAsync called with username: {Username}", username);
+
+            var userDetails = await _userProfileRepository.GetUserDetailsByUsernameAsync(username);
+            if (userDetails == null)
+            {
+                _logger.LogWarning("User details not found for username: {Username}", username);
+                return null;
+            }
+
+            _logger.LogInformation("User details found for username: {Username}", username);
+            return userDetails;
+        }
 
         public async Task<bool> UpdateUserProfileAsync(string username, UserProfileUpdateDto profileDto)
         {

@@ -21,7 +21,7 @@ namespace CulinarioAPI.Controllers
             _logger = logger;
         }
 
-        [HttpGet]
+        [HttpGet("all")]
         public async Task<IActionResult> GetAllRecipes()
         {
             _logger.LogInformation("GetAllRecipes called");
