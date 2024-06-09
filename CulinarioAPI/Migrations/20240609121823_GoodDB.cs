@@ -12,6 +12,17 @@ namespace CulinarioAPI.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
+                name: "Countries",
+                columns: table => new
+                {
+                    CountryName = table.Column<string>(type: "nvarchar(450)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Countries", x => x.CountryName);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "UserCredentials",
                 columns: table => new
                 {
@@ -40,11 +51,19 @@ namespace CulinarioAPI.Migrations
                     TotalTime = table.Column<int>(type: "int", nullable: false),
                     Servings = table.Column<int>(type: "int", nullable: false),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    RecipeType = table.Column<int>(type: "int", nullable: false),
+                    CountryName = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     AdminId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Recipes", x => x.RecipeId);
+                    table.ForeignKey(
+                        name: "FK_Recipes_Countries_CountryName",
+                        column: x => x.CountryName,
+                        principalTable: "Countries",
+                        principalColumn: "CountryName",
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Recipes_UserCredentials_AdminId",
                         column: x => x.AdminId,
@@ -266,6 +285,11 @@ namespace CulinarioAPI.Migrations
                 name: "IX_Recipes_AdminId",
                 table: "Recipes",
                 column: "AdminId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Recipes_CountryName",
+                table: "Recipes",
+                column: "CountryName");
         }
 
         /// <inheritdoc />
@@ -294,6 +318,9 @@ namespace CulinarioAPI.Migrations
 
             migrationBuilder.DropTable(
                 name: "UserProfiles");
+
+            migrationBuilder.DropTable(
+                name: "Countries");
 
             migrationBuilder.DropTable(
                 name: "UserCredentials");

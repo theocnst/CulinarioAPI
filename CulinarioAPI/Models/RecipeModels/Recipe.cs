@@ -19,7 +19,7 @@ namespace CulinarioAPI.Models.RecipeModels
         public RecipeType RecipeType { get; set; }
 
         [ForeignKey("Country")]
-        public int CountryId { get; set; }
+        public string CountryName{ get; set; }
 
         [ForeignKey("UserCredentials")]
         public int AdminId { get; set; }

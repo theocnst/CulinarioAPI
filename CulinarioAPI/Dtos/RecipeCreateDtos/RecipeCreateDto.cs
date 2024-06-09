@@ -12,7 +12,7 @@ namespace CulinarioAPI.Dtos.RecipeCreateDtos
         public int Servings { get; set; }
         public string Description { get; set; }
         public int AdminId { get; set; }
-        public int CountryId { get; set; }
+        public string CountryName { get; set; }
         public RecipeType RecipeType { get; set; }
         public List<IngredientCreateDto> Ingredients { get; set; }
         public List<InstructionCreateDto> Instructions { get; set; }

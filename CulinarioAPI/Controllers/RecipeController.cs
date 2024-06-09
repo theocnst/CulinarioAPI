@@ -69,5 +69,21 @@ namespace CulinarioAPI.Controllers
             await _recipeService.DeleteRecipeAsync(id);
             return NoContent();
         }
+
+        [HttpGet("countries")]
+        public async Task<IActionResult> GetAllCountries()
+        {
+            _logger.LogInformation("GetAllCountries called");
+            var countries = await _recipeService.GetAllCountriesAsync();
+            return Ok(countries);
+        }
+
+        [HttpGet("recipetypes")]
+        public IActionResult GetRecipeTypes()
+        {
+            _logger.LogInformation("GetRecipeTypes called");
+            var recipeTypes = _recipeService.GetRecipeTypes();
+            return Ok(recipeTypes);
+        }
     }
 }

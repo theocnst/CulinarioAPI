@@ -11,5 +11,9 @@ namespace CulinarioAPI.Repositories.RecipeRepositories
         Task AddRecipeAsync(Recipe recipe);
         Task UpdateRecipeAsync(Recipe recipe);
         Task DeleteRecipeAsync(int id);
+        Task<IEnumerable<Country>> GetAllCountriesAsync();
+        Task<Country> GetCountryByNameAsync(string countryName);
+        Task AddCountryAsync(Country country);
+        Task SaveChangesAsync();
     }
 }

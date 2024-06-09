@@ -24,17 +24,10 @@ namespace CulinarioAPI.Migrations
 
             modelBuilder.Entity("CulinarioAPI.Models.RecipeModels.Country", b =>
                 {
-                    b.Property<int>("CountryId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                    b.Property<string>("CountryName")
+                        .HasColumnType("nvarchar(450)");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CountryId"));
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("CountryId");
+                    b.HasKey("CountryName");
 
                     b.ToTable("Countries");
                 });
@@ -161,8 +154,9 @@ namespace CulinarioAPI.Migrations
                     b.Property<int>("CookTime")
                         .HasColumnType("int");
 
-                    b.Property<int>("CountryId")
-                        .HasColumnType("int");
+                    b.Property<string>("CountryName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Description")
                         .IsRequired()
@@ -192,7 +186,7 @@ namespace CulinarioAPI.Migrations
 
                     b.HasIndex("AdminId");
 
-                    b.HasIndex("CountryId");
+                    b.HasIndex("CountryName");
 
                     b.ToTable("Recipes");
                 });
@@ -368,7 +362,7 @@ namespace CulinarioAPI.Migrations
 
                     b.HasOne("CulinarioAPI.Models.RecipeModels.Country", "Country")
                         .WithMany("Recipes")
-                        .HasForeignKey("CountryId")
+                        .HasForeignKey("CountryName")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 

@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CulinarioAPI.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240608181006_GoodDB")]
+    [Migration("20240609121823_GoodDB")]
     partial class GoodDB
     {
         /// <inheritdoc />
@@ -24,6 +24,16 @@ namespace CulinarioAPI.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+
+            modelBuilder.Entity("CulinarioAPI.Models.RecipeModels.Country", b =>
+                {
+                    b.Property<string>("CountryName")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("CountryName");
+
+                    b.ToTable("Countries");
+                });
 
             modelBuilder.Entity("CulinarioAPI.Models.RecipeModels.Ingredient", b =>
                 {
@@ -147,6 +157,10 @@ namespace CulinarioAPI.Migrations
                     b.Property<int>("CookTime")
                         .HasColumnType("int");
 
+                    b.Property<string>("CountryName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -162,6 +176,9 @@ namespace CulinarioAPI.Migrations
                     b.Property<int>("PrepTime")
                         .HasColumnType("int");
 
+                    b.Property<int>("RecipeType")
+                        .HasColumnType("int");
+
                     b.Property<int>("Servings")
                         .HasColumnType("int");
 
@@ -171,6 +188,8 @@ namespace CulinarioAPI.Migrations
                     b.HasKey("RecipeId");
 
                     b.HasIndex("AdminId");
+
+                    b.HasIndex("CountryName");
 
                     b.ToTable("Recipes");
                 });
@@ -344,7 +363,15 @@ namespace CulinarioAPI.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("CulinarioAPI.Models.RecipeModels.Country", "Country")
+                        .WithMany("Recipes")
+                        .HasForeignKey("CountryName")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.Navigation("Admin");
+
+                    b.Navigation("Country");
                 });
 
             modelBuilder.Entity("CulinarioAPI.Models.UserModels.Friendship", b =>
@@ -394,6 +421,11 @@ namespace CulinarioAPI.Migrations
                         .IsRequired();
 
                     b.Navigation("UserCredentials");
+                });
+
+            modelBuilder.Entity("CulinarioAPI.Models.RecipeModels.Country", b =>
+                {
+                    b.Navigation("Recipes");
                 });
 
             modelBuilder.Entity("CulinarioAPI.Models.RecipeModels.Recipe", b =>

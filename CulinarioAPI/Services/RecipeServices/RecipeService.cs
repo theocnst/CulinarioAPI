@@ -5,6 +5,7 @@ using CulinarioAPI.Models.RecipeModels;
 using CulinarioAPI.Repositories.RecipeRepositories;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace CulinarioAPI.Services.RecipeServices
@@ -39,6 +40,16 @@ namespace CulinarioAPI.Services.RecipeServices
         public async Task<RecipeDto> AddRecipeAsync(RecipeCreateDto recipeCreateDto)
         {
             _logger.LogInformation("AddRecipeAsync called");
+
+            // Ensure the country exists or create it
+            var country = await _recipeRepository.GetCountryByNameAsync(recipeCreateDto.CountryName);
+            if (country == null)
+            {
+                country = new Country { CountryName = recipeCreateDto.CountryName };
+                await _recipeRepository.AddCountryAsync(country);
+                await _recipeRepository.SaveChangesAsync(); // Ensure changes are saved before proceeding
+            }
+
             var recipe = _mapper.Map<Recipe>(recipeCreateDto);
             await _recipeRepository.AddRecipeAsync(recipe);
 
@@ -46,12 +57,21 @@ namespace CulinarioAPI.Services.RecipeServices
             return _mapper.Map<RecipeDto>(recipe);
         }
 
+
         public async Task UpdateRecipeAsync(int id, RecipeCreateDto recipeCreateDto)
         {
             _logger.LogInformation("UpdateRecipeAsync called with id: {Id}", id);
             var recipe = await _recipeRepository.GetRecipeByIdAsync(id);
             if (recipe != null)
             {
+                // Ensure the country exists or create it
+                var country = await _recipeRepository.GetCountryByNameAsync(recipeCreateDto.CountryName);
+                if (country == null)
+                {
+                    country = new Country { CountryName = recipeCreateDto.CountryName };
+                    await _recipeRepository.AddCountryAsync(country);
+                }
+
                 _mapper.Map(recipeCreateDto, recipe);
                 await _recipeRepository.UpdateRecipeAsync(recipe);
             }
@@ -61,6 +81,22 @@ namespace CulinarioAPI.Services.RecipeServices
         {
             _logger.LogInformation("DeleteRecipeAsync called with id: {Id}", id);
             await _recipeRepository.DeleteRecipeAsync(id);
+        }
+
+        public async Task<IEnumerable<CountryDto>> GetAllCountriesAsync()
+        {
+            _logger.LogInformation("GetAllCountriesAsync called");
+            var countries = await _recipeRepository.GetAllCountriesAsync();
+            return _mapper.Map<IEnumerable<CountryDto>>(countries);
+        }
+
+        public IEnumerable<RecipeTypeDto> GetRecipeTypes()
+        {
+            _logger.LogInformation("GetRecipeTypes called");
+            return Enum.GetValues(typeof(RecipeType))
+                       .Cast<RecipeType>()
+                       .Select(rt => new RecipeTypeDto { Name = rt.ToString() })
+                       .ToList();
         }
     }
 }

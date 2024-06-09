@@ -109,7 +109,8 @@ namespace CulinarioAPI.Data
             modelBuilder.Entity<Recipe>()
                 .HasOne(r => r.Country)
                 .WithMany(c => c.Recipes)
-                .HasForeignKey(r => r.CountryId)
+                .HasForeignKey(r => r.CountryName)
+                .HasPrincipalKey(c => c.CountryName)
                 .OnDelete(DeleteBehavior.Restrict);
         }
     }
