@@ -23,8 +23,11 @@ namespace CulinarioAPI
                 .ForMember(dest => dest.AdminUsername, opt => opt.MapFrom(src => src.Admin.Username))
                 .ForMember(dest => dest.NutritionInfo, opt => opt.MapFrom(src => src.NutritionInfo));
 
-            CreateMap<RecipeCreateDto, Recipe>();
-
+            CreateMap<RecipeCreateDto, Recipe>()
+                .ForMember(dest => dest.RecipeType, opt => opt.MapFrom(src => Enum.Parse<RecipeType>(src.RecipeType.Name)));
+            
+            CreateMap<RecipeTypeDto, RecipeType>().ConvertUsing(src => (RecipeType)Enum.Parse(typeof(RecipeType), src.Name, true));
+           
             // Ingredient Mappings
             CreateMap<Ingredient, IngredientDto>().ReverseMap();
             CreateMap<IngredientCreateDto, Ingredient>();

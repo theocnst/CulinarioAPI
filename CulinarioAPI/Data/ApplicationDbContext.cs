@@ -1,5 +1,4 @@
-﻿using System.ComponentModel;
-using CulinarioAPI.Models.RecipeModels;
+﻿using CulinarioAPI.Models.RecipeModels;
 using CulinarioAPI.Models.UserModels;
 using Microsoft.EntityFrameworkCore;
 

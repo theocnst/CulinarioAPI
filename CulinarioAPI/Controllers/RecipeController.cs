@@ -1,14 +1,13 @@
 ﻿using CulinarioAPI.Dtos.RecipeCreateDtos;
-using CulinarioAPI.Dtos.RecipeDtos;
 using CulinarioAPI.Services.RecipeServices;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 namespace CulinarioAPI.Controllers
 {
     [ApiController]
+    [Authorize]
     [Route("api/[controller]")]
     public class RecipeController : ControllerBase
     {
@@ -42,18 +41,16 @@ namespace CulinarioAPI.Controllers
             return Ok(recipe);
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         public async Task<IActionResult> AddRecipe([FromBody] RecipeCreateDto recipeCreateDto)
         {
-            _logger.LogInformation("AddRecipe called");
-
-            // Add the recipe
+            _logger.LogInformation("AddRecipe called with payload: {payload}", JsonConvert.SerializeObject(recipeCreateDto));
             var createdRecipe = await _recipeService.AddRecipeAsync(recipeCreateDto);
-
-            // Return the created recipe
             return CreatedAtAction(nameof(GetRecipeById), new { id = createdRecipe.RecipeId }, createdRecipe);
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateRecipe(int id, [FromBody] RecipeCreateDto recipeCreateDto)
         {
@@ -62,6 +59,7 @@ namespace CulinarioAPI.Controllers
             return NoContent();
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteRecipe(int id)
         {

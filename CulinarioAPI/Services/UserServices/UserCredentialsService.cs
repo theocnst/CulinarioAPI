@@ -152,8 +152,10 @@ namespace CulinarioAPI.Services.UserServices
             {
                 new Claim(JwtRegisteredClaimNames.Sub, user.Email),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                new Claim(ClaimTypes.NameIdentifier, user.Username), // Keep this claim for consistency
-                new Claim("username", user.Username) // Add a new claim for username
+                new Claim(ClaimTypes.NameIdentifier, user.Username),
+                new Claim("username", user.Username),
+                new Claim(ClaimTypes.Role, user.IsAdmin ? "Admin" : "User") ,
+                new Claim("role", user.IsAdmin ? "Admin" : "User")
             };
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
@@ -163,7 +165,7 @@ namespace CulinarioAPI.Services.UserServices
                 issuer: _configuration["Jwt:Issuer"],
                 audience: _configuration["Jwt:Audience"],
                 claims: claims,
-                expires: DateTime.UtcNow.AddMinutes(15), // Set expiration to 15 minutes
+                expires: DateTime.UtcNow.AddMinutes(15), // Set expiration
                 signingCredentials: creds
             );
 

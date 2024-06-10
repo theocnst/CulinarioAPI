@@ -1,8 +1,10 @@
 ﻿using CulinarioAPI.Dtos.UserDtos;
 using CulinarioAPI.Services.UserServices;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 [ApiController]
+[Authorize]
 [Route("api/[controller]")]
 public class UserProfileController : ControllerBase
 {
