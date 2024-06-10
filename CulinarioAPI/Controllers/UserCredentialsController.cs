@@ -4,7 +4,6 @@ using CulinarioAPI.Dtos.UserDtos;
 using CulinarioAPI.Services.UserServices;
 
 [ApiController]
-[Authorize]
 [Route("api/[controller]")]
 public class UserCredentialsController : ControllerBase
 {
@@ -82,6 +81,7 @@ public class UserCredentialsController : ControllerBase
         }
     }
 
+    [Authorize]
     [HttpPost("logout")]
     public async Task<IActionResult> Logout()
     {
@@ -108,6 +108,7 @@ public class UserCredentialsController : ControllerBase
         }
     }
 
+    [Authorize]
     [HttpGet("authenticated")]
     public async Task<IActionResult> Authenticated()
     {
