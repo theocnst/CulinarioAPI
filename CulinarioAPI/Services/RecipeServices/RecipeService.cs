@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using CulinarioAPI.Dtos;
 using CulinarioAPI.Dtos.RecipeCreateDtos;
 using CulinarioAPI.Dtos.RecipeDtos;
 using CulinarioAPI.Models.RecipeModels;
@@ -94,5 +95,40 @@ namespace CulinarioAPI.Services.RecipeServices
                        .Select(rt => new RecipeTypeDto { Name = rt.ToString() })
                        .ToList();
         }
+        public async Task<RecipeDto> RateRecipeAsync(RatingDto ratingDto)
+        {
+            _logger.LogInformation("RateRecipeAsync called for RecipeId: {RecipeId} by User: {Username}", ratingDto.RecipeId, ratingDto.Username);
+
+            if (ratingDto.Score < 1 || ratingDto.Score > 10)
+            {
+                _logger.LogWarning("Invalid rating score: {Score} by User: {Username} for RecipeId: {RecipeId}", ratingDto.Score, ratingDto.Username, ratingDto.RecipeId);
+                throw new ArgumentException("Rating score must be between 1 and 10.");
+            }
+
+            var rating = await _recipeRepository.GetRatingByUserAndRecipeAsync(ratingDto.Username, ratingDto.RecipeId);
+            if (rating == null)
+            {
+                rating = new Rating
+                {
+                    Username = ratingDto.Username,
+                    RecipeId = ratingDto.RecipeId,
+                    Score = ratingDto.Score
+                };
+                await _recipeRepository.AddRatingAsync(rating);
+            }
+            else
+            {
+                rating.Score = ratingDto.Score;
+                await _recipeRepository.UpdateRatingAsync(rating);
+            }
+
+            var recipe = await _recipeRepository.GetRecipeByIdAsync(ratingDto.RecipeId);
+            _logger.LogInformation("RecipeId: {RecipeId} has now {NumberOfRatings} ratings", recipe.RecipeId, recipe.Ratings.Count);
+
+            await _recipeRepository.UpdateRecipeAsync(recipe);
+
+            return _mapper.Map<RecipeDto>(recipe);
+        }
+
     }
 }

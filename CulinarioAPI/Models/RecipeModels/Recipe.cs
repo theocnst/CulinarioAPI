@@ -32,9 +32,9 @@ namespace CulinarioAPI.Models.RecipeModels
         public virtual Country Country { get; set; }
 
         [NotMapped]
-        public double StarRating => Ratings.Any() ? Ratings.Average(r => r.Score) : 0;
+        public double AverageRating => Ratings.Any() ? Ratings.Average(r => r.Score) : 0;
 
         [NotMapped]
-        public int NumberOfVotes => Ratings.Count;
+        public int NumberOfRatings => Ratings.Count;
     }
 }

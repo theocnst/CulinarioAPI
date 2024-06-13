@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using CulinarioAPI.Dtos;
 using CulinarioAPI.Dtos.RecipeCreateDtos;
 using CulinarioAPI.Dtos.RecipeDtos;
 using CulinarioAPI.Dtos.UserDtos;
@@ -21,13 +22,15 @@ namespace CulinarioAPI
             CreateMap<Recipe, RecipeDto>()
                 .ForMember(dest => dest.RecipeType, opt => opt.MapFrom(src => new RecipeTypeDto { Name = src.RecipeType.ToString() }))
                 .ForMember(dest => dest.AdminUsername, opt => opt.MapFrom(src => src.Admin.Username))
-                .ForMember(dest => dest.NutritionInfo, opt => opt.MapFrom(src => src.NutritionInfo));
+                .ForMember(dest => dest.NutritionInfo, opt => opt.MapFrom(src => src.NutritionInfo))
+                .ForMember(dest => dest.AverageRating, opt => opt.MapFrom(src => src.AverageRating))
+                .ForMember(dest => dest.NumberOfRatings, opt => opt.MapFrom(src => src.NumberOfRatings));
 
             CreateMap<RecipeCreateDto, Recipe>()
                 .ForMember(dest => dest.RecipeType, opt => opt.MapFrom(src => Enum.Parse<RecipeType>(src.RecipeType.Name)));
-            
+
             CreateMap<RecipeTypeDto, RecipeType>().ConvertUsing(src => (RecipeType)Enum.Parse(typeof(RecipeType), src.Name, true));
-           
+
             // Ingredient Mappings
             CreateMap<Ingredient, IngredientDto>().ReverseMap();
             CreateMap<IngredientCreateDto, Ingredient>();
@@ -42,6 +45,9 @@ namespace CulinarioAPI
 
             // Country Mappings
             CreateMap<Country, CountryDto>().ReverseMap();
+
+            // Rating Mappings
+            CreateMap<Rating, RatingDto>().ReverseMap();
         }
     }
 }

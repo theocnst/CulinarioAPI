@@ -1,6 +1,4 @@
-﻿using CulinarioAPI.Models.RecipeModels;
-
-namespace CulinarioAPI.Dtos.RecipeDtos
+﻿namespace CulinarioAPI.Dtos.RecipeDtos
 {
     public class RecipeDto
     {
@@ -18,5 +16,9 @@ namespace CulinarioAPI.Dtos.RecipeDtos
         public NutritionInfoDto NutritionInfo { get; set; }
         public List<IngredientDto> Ingredients { get; set; }
         public List<InstructionDto> Instructions { get; set; }
+
+        // New fields for ratings
+        public double AverageRating { get; set; }
+        public int NumberOfRatings { get; set; }
     }
 }

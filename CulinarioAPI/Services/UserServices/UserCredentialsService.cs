@@ -165,7 +165,7 @@ namespace CulinarioAPI.Services.UserServices
                 issuer: _configuration["Jwt:Issuer"],
                 audience: _configuration["Jwt:Audience"],
                 claims: claims,
-                expires: DateTime.UtcNow.AddMinutes(15), // Set expiration
+                expires: DateTime.UtcNow.AddMinutes(120), // Set expiration
                 signingCredentials: creds
             );
 

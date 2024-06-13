@@ -146,7 +146,7 @@ public class UserCredentialsController : ControllerBase
         var cookieOptions = new CookieOptions
         {
             HttpOnly = true,
-            Expires = DateTime.UtcNow.AddMinutes(15), // Ensure the cookie expiration matches token expiration
+            Expires = DateTime.UtcNow.AddMinutes(120), // Ensure the cookie expiration matches token expiration
             Secure = true,
             SameSite = SameSiteMode.None // Updated to None
         };

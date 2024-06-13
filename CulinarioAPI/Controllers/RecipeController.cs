@@ -1,4 +1,5 @@
-﻿using CulinarioAPI.Dtos.RecipeCreateDtos;
+﻿using CulinarioAPI.Dtos;
+using CulinarioAPI.Dtos.RecipeCreateDtos;
 using CulinarioAPI.Services.RecipeServices;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -82,6 +83,35 @@ namespace CulinarioAPI.Controllers
             _logger.LogInformation("GetRecipeTypes called");
             var recipeTypes = _recipeService.GetRecipeTypes();
             return Ok(recipeTypes);
+        }
+
+        // New API endpoint for rating a recipe
+        [HttpPost("{id}/rate")]
+        public async Task<IActionResult> RateRecipe(int id, [FromBody] RatingDto ratingDto)
+        {
+            _logger.LogInformation("RateRecipe called for RecipeId: {RecipeId} by User: {Username}", id, ratingDto.Username);
+
+            if (id != ratingDto.RecipeId)
+            {
+                _logger.LogWarning("Recipe ID mismatch: {Id} vs {RecipeId}", id, ratingDto.RecipeId);
+                return BadRequest("Recipe ID mismatch");
+            }
+
+            try
+            {
+                var updatedRecipe = await _recipeService.RateRecipeAsync(ratingDto);
+                return Ok(updatedRecipe);
+            }
+            catch (ArgumentException ex)
+            {
+                _logger.LogError(ex, "Invalid rating score: {Score}", ratingDto.Score);
+                return BadRequest(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error rating recipe");
+                return StatusCode(500, "Internal server error");
+            }
         }
     }
 }

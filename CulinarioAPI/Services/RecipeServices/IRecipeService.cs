@@ -1,4 +1,5 @@
-﻿using CulinarioAPI.Dtos.RecipeCreateDtos;
+﻿using CulinarioAPI.Dtos;
+using CulinarioAPI.Dtos.RecipeCreateDtos;
 using CulinarioAPI.Dtos.RecipeDtos;
 
 namespace CulinarioAPI.Services.RecipeServices
@@ -10,7 +11,8 @@ namespace CulinarioAPI.Services.RecipeServices
         Task<RecipeDto> AddRecipeAsync(RecipeCreateDto recipeCreateDto);
         Task UpdateRecipeAsync(int id, RecipeCreateDto recipeCreateDto);
         Task DeleteRecipeAsync(int id);
-        Task<IEnumerable<CountryDto>> GetAllCountriesAsync(); // New method
-        IEnumerable<RecipeTypeDto> GetRecipeTypes(); // Updated method
+        Task<IEnumerable<CountryDto>> GetAllCountriesAsync();
+        IEnumerable<RecipeTypeDto> GetRecipeTypes();
+        Task<RecipeDto> RateRecipeAsync(RatingDto ratingDto);
     }
 }

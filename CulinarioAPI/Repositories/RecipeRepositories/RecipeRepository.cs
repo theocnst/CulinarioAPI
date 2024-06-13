@@ -22,6 +22,7 @@ namespace CulinarioAPI.Repositories.RecipeRepositories
         {
             _logger.LogInformation("GetAllRecipesAsync called");
             return await _context.Recipes
+                .Include(r => r.Ratings)
                 .Include(r => r.Ingredients)
                 .Include(r => r.Instructions)
                 .Include(r => r.NutritionInfo)
@@ -34,6 +35,7 @@ namespace CulinarioAPI.Repositories.RecipeRepositories
         {
             _logger.LogInformation("GetRecipeByIdAsync called with id: {Id}", id);
             return await _context.Recipes
+                 .Include(r => r.Ratings)
                 .Include(r => r.Ingredients)
                 .Include(r => r.Instructions)
                 .Include(r => r.NutritionInfo)
@@ -88,6 +90,24 @@ namespace CulinarioAPI.Repositories.RecipeRepositories
 
         public async Task SaveChangesAsync()
         {
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task<Rating> GetRatingByUserAndRecipeAsync(string username, int recipeId)
+        {
+            return await _context.Ratings
+                .FirstOrDefaultAsync(r => r.Username == username && r.RecipeId == recipeId);
+        }
+
+        public async Task AddRatingAsync(Rating rating)
+        {
+            await _context.Ratings.AddAsync(rating);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task UpdateRatingAsync(Rating rating)
+        {
+            _context.Ratings.Update(rating);
             await _context.SaveChangesAsync();
         }
     }

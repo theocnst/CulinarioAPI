@@ -15,5 +15,8 @@ namespace CulinarioAPI.Repositories.RecipeRepositories
         Task<Country> GetCountryByNameAsync(string countryName);
         Task AddCountryAsync(Country country);
         Task SaveChangesAsync();
+        Task<Rating> GetRatingByUserAndRecipeAsync(string username, int recipeId);
+        Task AddRatingAsync(Rating rating);
+        Task UpdateRatingAsync(Rating rating);
     }
 }
