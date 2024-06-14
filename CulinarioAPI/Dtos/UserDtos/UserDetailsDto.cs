@@ -21,6 +21,6 @@ namespace CulinarioAPI.Dtos.UserDtos
 
     public class LikedRecipeDto
     {
-        public string Name { get; set; }
+        public int RecipeId { get; set; }
     }
 }

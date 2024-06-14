@@ -132,7 +132,7 @@ namespace CulinarioAPI.Repositories.UserRepositories
                     .Where(lr => lr.Recipe != null) // Ensure no null Recipe
                     .Select(lr => new LikedRecipeDto
                     {
-                        Name = lr.Recipe.Name
+                        RecipeId = lr.RecipeId,
                     }).ToList()
             };
 
