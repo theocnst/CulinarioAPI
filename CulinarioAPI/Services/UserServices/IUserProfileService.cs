@@ -7,5 +7,7 @@ namespace CulinarioAPI.Services.UserServices
         Task<UserProfileDto> GetUserProfileAsync(string username);
         Task<UserDetailsDto> GetUserDetailsAsync(string username);
         Task<bool> UpdateUserProfileAsync(string username, UserProfileUpdateDto profileDto);
+        Task<bool> AddFriendAsync(FriendshipDto friendshipDto);
+        Task<bool> RemoveFriendAsync(FriendshipDto friendshipDto);
     }
 }

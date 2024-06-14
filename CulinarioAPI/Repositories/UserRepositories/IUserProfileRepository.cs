@@ -10,5 +10,8 @@ namespace CulinarioAPI.Repositories.UserRepositories
         Task<UserProfile> GetUserProfileByUsernameAsync(string username);
         Task UpdateUserProfileAsync(UserProfile profile);
         Task<bool> UserProfileExistsAsync(string username);
+        Task<bool> AddFriendAsync(FriendshipDto friendshipDto);
+        Task<bool> RemoveFriendAsync(FriendshipDto friendshipDto);
+
     }
 }

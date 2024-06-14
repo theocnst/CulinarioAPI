@@ -80,5 +80,35 @@ namespace CulinarioAPI.Services.UserServices
                 return false;
             }
         }
+        public async Task<bool> AddFriendAsync(FriendshipDto friendshipDto)
+        {
+            _logger.LogInformation("AddFriendAsync called with username: {Username} and friendUsername: {FriendUsername}", friendshipDto.Username, friendshipDto.FriendUsername);
+
+            try
+            {
+                return await _userProfileRepository.AddFriendAsync(friendshipDto);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred while adding friend for username: {Username}", friendshipDto.Username);
+                return false;
+            }
+        }
+
+
+        public async Task<bool> RemoveFriendAsync(FriendshipDto friendshipDto)
+        {
+            _logger.LogInformation("RemoveFriendAsync called with username: {Username} and friendUsername: {FriendUsername}", friendshipDto.Username, friendshipDto.FriendUsername);
+
+            try
+            {
+                return await _userProfileRepository.RemoveFriendAsync(friendshipDto);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred while removing friend for username: {Username}", friendshipDto.Username);
+                return false;
+            }
+        }
     }
 }

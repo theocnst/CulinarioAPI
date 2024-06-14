@@ -139,5 +139,49 @@ namespace CulinarioAPI.Repositories.UserRepositories
             _logger.LogInformation("UserDetailsDto created for username: {Username}", username);
             return userDetails;
         }
+
+        public async Task<bool> AddFriendAsync(FriendshipDto friendshipDto)
+        {
+            var user = await _context.UserProfiles.SingleOrDefaultAsync(u => u.Username == friendshipDto.Username);
+            var friend = await _context.UserProfiles.SingleOrDefaultAsync(u => u.Username == friendshipDto.FriendUsername);
+
+            if (user == null || friend == null)
+            {
+                return false;
+            }
+
+            var existingFriendship = await _context.Friendships
+                .SingleOrDefaultAsync(f => f.Username == friendshipDto.Username && f.FriendUsername == friendshipDto.FriendUsername);
+
+            if (existingFriendship != null)
+            {
+                return false; // Friendship already exists
+            }
+
+            var friendship = new Friendship
+            {
+                Username = user.Username,
+                FriendUsername = friend.Username
+            };
+
+            _context.Friendships.Add(friendship);
+            await _context.SaveChangesAsync();
+            return true;
+        }
+
+
+        public async Task<bool> RemoveFriendAsync(FriendshipDto friendshipDto)
+        {
+            var friendship = await _context.Friendships.SingleOrDefaultAsync(f => f.Username == friendshipDto.Username && f.FriendUsername == friendshipDto.FriendUsername);
+
+            if (friendship == null)
+            {
+                return false;
+            }
+
+            _context.Friendships.Remove(friendship);
+            await _context.SaveChangesAsync();
+            return true;
+        }
     }
 }

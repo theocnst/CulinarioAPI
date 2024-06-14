@@ -13,7 +13,6 @@ namespace CulinarioAPI.Models.UserModels
 
         [ForeignKey("FriendUserProfile")]
         public string FriendUsername { get; set; }
-        public string Status { get; set; }
 
         public virtual UserProfile UserProfile { get; set; }
         public virtual UserProfile FriendUserProfile { get; set; }

@@ -89,4 +89,28 @@ public class UserProfileController : ControllerBase
             return StatusCode(500, "Internal server error");
         }
     }
+
+    [HttpPost("addFriend")]
+    public async Task<IActionResult> AddFriend([FromBody] FriendshipDto friendshipDto)
+    {
+        var success = await _userProfileService.AddFriendAsync(friendshipDto);
+        if (success)
+        {
+            return Ok();
+        }
+
+        return BadRequest("Failed to add friend.");
+    }
+
+    [HttpPost("removeFriend")]
+    public async Task<IActionResult> RemoveFriend([FromBody] FriendshipDto friendshipDto)
+    {
+        var success = await _userProfileService.RemoveFriendAsync(friendshipDto);
+        if (success)
+        {
+            return Ok();
+        }
+
+        return BadRequest("Failed to remove friend.");
+    }
 }
