@@ -12,6 +12,7 @@ namespace CulinarioAPI.Repositories.UserRepositories
         Task<bool> UserProfileExistsAsync(string username);
         Task<bool> AddFriendAsync(FriendshipDto friendshipDto);
         Task<bool> RemoveFriendAsync(FriendshipDto friendshipDto);
-
+        Task<bool> AddLikedRecipeAsync(LikedRecipeOperationDto likedRecipeDto);
+        Task<bool> RemoveLikedRecipeAsync(LikedRecipeOperationDto likedRecipeDto);
     }
 }

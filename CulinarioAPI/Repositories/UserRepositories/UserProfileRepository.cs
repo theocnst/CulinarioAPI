@@ -183,5 +183,48 @@ namespace CulinarioAPI.Repositories.UserRepositories
             await _context.SaveChangesAsync();
             return true;
         }
+        public async Task<bool> AddLikedRecipeAsync(LikedRecipeOperationDto likedRecipeDto)
+        {
+            var user = await _context.UserProfiles.SingleOrDefaultAsync(u => u.Username == likedRecipeDto.Username);
+            var recipe = await _context.Recipes.SingleOrDefaultAsync(r => r.RecipeId == likedRecipeDto.RecipeId);
+
+            if (user == null || recipe == null)
+            {
+                return false;
+            }
+
+            var existingLikedRecipe = await _context.LikedRecipes
+                .SingleOrDefaultAsync(lr => lr.Username == likedRecipeDto.Username && lr.RecipeId == likedRecipeDto.RecipeId);
+
+            if (existingLikedRecipe != null)
+            {
+                return false; // Liked recipe already exists
+            }
+
+            var likedRecipe = new LikedRecipe
+            {
+                Username = user.Username,
+                RecipeId = recipe.RecipeId
+            };
+
+            _context.LikedRecipes.Add(likedRecipe);
+            await _context.SaveChangesAsync();
+            return true;
+        }
+
+        public async Task<bool> RemoveLikedRecipeAsync(LikedRecipeOperationDto likedRecipeDto)
+        {
+            var likedRecipe = await _context.LikedRecipes.SingleOrDefaultAsync(lr => lr.Username == likedRecipeDto.Username && lr.RecipeId == likedRecipeDto.RecipeId);
+
+            if (likedRecipe == null)
+            {
+                return false;
+            }
+
+            _context.LikedRecipes.Remove(likedRecipe);
+            await _context.SaveChangesAsync();
+            return true;
+        }
+
     }
 }

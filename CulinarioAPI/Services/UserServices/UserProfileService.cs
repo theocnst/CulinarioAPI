@@ -110,5 +110,35 @@ namespace CulinarioAPI.Services.UserServices
                 return false;
             }
         }
+        public async Task<bool> AddLikedRecipeAsync(LikedRecipeOperationDto likedRecipeDto)
+        {
+            _logger.LogInformation("AddLikedRecipeAsync called with username: {Username} and recipeId: {RecipeId}", likedRecipeDto.Username, likedRecipeDto.RecipeId);
+
+            try
+            {
+                return await _userProfileRepository.AddLikedRecipeAsync(likedRecipeDto);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred while adding liked recipe for username: {Username}", likedRecipeDto.Username);
+                return false;
+            }
+        }
+
+        public async Task<bool> RemoveLikedRecipeAsync(LikedRecipeOperationDto likedRecipeDto)
+        {
+            _logger.LogInformation("RemoveLikedRecipeAsync called with username: {Username} and recipeId: {RecipeId}", likedRecipeDto.Username, likedRecipeDto.RecipeId);
+
+            try
+            {
+                return await _userProfileRepository.RemoveLikedRecipeAsync(likedRecipeDto);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred while removing liked recipe for username: {Username}", likedRecipeDto.Username);
+                return false;
+            }
+        }
+
     }
 }

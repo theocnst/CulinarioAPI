@@ -113,4 +113,28 @@ public class UserProfileController : ControllerBase
 
         return BadRequest("Failed to remove friend.");
     }
+    [HttpPost("likeRecipe")]
+    public async Task<IActionResult> LikeRecipe([FromBody] LikedRecipeOperationDto likedRecipeDto)
+    {
+        var success = await _userProfileService.AddLikedRecipeAsync(likedRecipeDto);
+        if (success)
+        {
+            return Ok();
+        }
+
+        return BadRequest("Failed to like recipe.");
+    }
+
+    [HttpPost("unlikeRecipe")]
+    public async Task<IActionResult> UnlikeRecipe([FromBody] LikedRecipeOperationDto likedRecipeDto)
+    {
+        var success = await _userProfileService.RemoveLikedRecipeAsync(likedRecipeDto);
+        if (success)
+        {
+            return Ok();
+        }
+
+        return BadRequest("Failed to unlike recipe.");
+    }
+
 }
