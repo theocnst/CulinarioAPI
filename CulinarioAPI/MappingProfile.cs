@@ -48,6 +48,12 @@ namespace CulinarioAPI
 
             // Rating Mappings
             CreateMap<Rating, RatingDto>().ReverseMap();
+
+            // Comment Mappings
+            CreateMap<Comment, CommentDto>()
+                .ForMember(dest => dest.ProfilePicture, opt => opt.MapFrom(src => src.UserProfile.ProfilePicture))
+                .ForMember(dest => dest.Name, opt => opt.MapFrom(src => $"{src.UserProfile.FirstName} {src.UserProfile.LastName}"));
+
         }
     }
 }

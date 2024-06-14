@@ -36,5 +36,7 @@ namespace CulinarioAPI.Models.RecipeModels
 
         [NotMapped]
         public int NumberOfRatings => Ratings.Count;
+
+        public virtual ICollection<Comment> Comments { get; set; }
     }
 }

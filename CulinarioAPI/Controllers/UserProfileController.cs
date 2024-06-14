@@ -113,6 +113,7 @@ public class UserProfileController : ControllerBase
 
         return BadRequest("Failed to remove friend.");
     }
+
     [HttpPost("likeRecipe")]
     public async Task<IActionResult> LikeRecipe([FromBody] LikedRecipeOperationDto likedRecipeDto)
     {

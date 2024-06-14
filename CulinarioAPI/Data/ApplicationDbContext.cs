@@ -21,6 +21,8 @@ namespace CulinarioAPI.Data
         public DbSet<Friendship> Friendships { get; set; }
         public DbSet<Rating> Ratings { get; set; }
         public DbSet<Country> Countries { get; set; }
+        public DbSet<Comment> Comments { get; set; }
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -111,6 +113,20 @@ namespace CulinarioAPI.Data
                 .HasForeignKey(r => r.CountryName)
                 .HasPrincipalKey(c => c.CountryName)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            // Comment and UserProfile
+            modelBuilder.Entity<Comment>()
+                .HasOne(c => c.UserProfile)
+                .WithMany(up => up.Comments)
+                .HasForeignKey(c => c.Username)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // Comment and Recipe
+            modelBuilder.Entity<Comment>()
+                .HasOne(c => c.Recipe)
+                .WithMany(r => r.Comments)
+                .HasForeignKey(c => c.RecipeId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

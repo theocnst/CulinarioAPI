@@ -20,5 +20,6 @@ namespace CulinarioAPI.Models.UserModels
         public virtual ICollection<Rating> Ratings { get; set; }
         public virtual ICollection<Friendship> Friendships { get; set; }
         public virtual ICollection<LikedRecipe> LikedRecipes { get; set; }
+        public virtual ICollection<Comment> Comments { get; set; }
     }
 }
