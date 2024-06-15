@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CulinarioAPI.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240614190413_commentAdded")]
-    partial class commentAdded
+    [Migration("20240615165206_GoodDB")]
+    partial class GoodDB
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

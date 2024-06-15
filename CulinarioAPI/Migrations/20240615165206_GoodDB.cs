@@ -159,14 +159,40 @@ namespace CulinarioAPI.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Comments",
+                columns: table => new
+                {
+                    CommentId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Username = table.Column<string>(type: "nvarchar(50)", nullable: false),
+                    RecipeId = table.Column<int>(type: "int", nullable: false),
+                    Note = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Comments", x => x.CommentId);
+                    table.ForeignKey(
+                        name: "FK_Comments_Recipes_RecipeId",
+                        column: x => x.RecipeId,
+                        principalTable: "Recipes",
+                        principalColumn: "RecipeId",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Comments_UserProfiles_Username",
+                        column: x => x.Username,
+                        principalTable: "UserProfiles",
+                        principalColumn: "Username",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Friendships",
                 columns: table => new
                 {
                     FriendshipId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Username = table.Column<string>(type: "nvarchar(50)", nullable: false),
-                    FriendUsername = table.Column<string>(type: "nvarchar(50)", nullable: false),
-                    Status = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    FriendUsername = table.Column<string>(type: "nvarchar(50)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -239,6 +265,16 @@ namespace CulinarioAPI.Migrations
                 });
 
             migrationBuilder.CreateIndex(
+                name: "IX_Comments_RecipeId",
+                table: "Comments",
+                column: "RecipeId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Comments_Username",
+                table: "Comments",
+                column: "Username");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Friendships_FriendUsername",
                 table: "Friendships",
                 column: "FriendUsername");
@@ -293,6 +329,9 @@ namespace CulinarioAPI.Migrations
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropTable(
+                name: "Comments");
+
             migrationBuilder.DropTable(
                 name: "Friendships");
 
