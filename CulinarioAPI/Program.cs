@@ -17,16 +17,17 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("ProdConnection")));
 
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowSpecificOrigin", policy =>
-        policy.WithOrigins("http://localhost:4200", "https://localhost:7053")
+        policy.WithOrigins("http://localhost:4200", "https://culinariowebapp.azurewebsites.net")
               .AllowAnyMethod()
               .AllowAnyHeader()
               .AllowCredentials());
 });
+
 
 builder.Services.AddAuthentication(options =>
 {
@@ -58,7 +59,7 @@ builder.Services.AddControllers()
 builder.Services.AddSwaggerGen(options =>
 {
     options.UseDateOnlyTimeOnlyStringConverters();
-}); 
+});
 
 builder.Services.AddAuthorization();
 
@@ -79,14 +80,12 @@ builder.Services.AddScoped<ICommentService, CommentService>();
 
 var app = builder.Build();
 
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+app.UseSwagger();
+app.UseSwaggerUI();
+
 
 app.UseHttpsRedirection();
-app.UseCors("AllowSpecificOrigin"); // Ensure CORS is configured correctly
+app.UseCors("AllowSpecificOrigin");
 
 app.UseAuthentication();
 app.UseAuthorization();
