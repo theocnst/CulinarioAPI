@@ -9,5 +9,6 @@ namespace CulinarioAPI.Services.UserServices
         Task<bool> LogoutUserAsync();
         Task<bool> IsTokenValidAsync(string token);
         Task<bool> IsUsernameUniqueAsync(string username);
+        Task<bool> IsEmailUniqueAsync(string email);
     }
 }

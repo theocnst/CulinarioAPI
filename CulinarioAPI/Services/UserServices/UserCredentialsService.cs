@@ -60,7 +60,7 @@ namespace CulinarioAPI.Services.UserServices
                     Username = user.Username,
                     FirstName = string.Empty,
                     LastName = string.Empty,
-                    ProfilePicture = string.Empty,
+                    ProfilePicture = "https://www.iconpacks.net/icons/2/free-user-icon-3296-thumb.png",
                     Description = string.Empty,
                     DateOfBirth = DateOnly.MinValue
                 };
@@ -172,6 +172,10 @@ namespace CulinarioAPI.Services.UserServices
             var tokenString = new JwtSecurityTokenHandler().WriteToken(token);
             _logger.LogInformation("JWT token generated: {Token}", tokenString);
             return tokenString;
+        }
+        public async Task<bool> IsEmailUniqueAsync(string email)
+        {
+            return !await _userCredentialsRepository.UserExistsAsync(email);
         }
     }
 }

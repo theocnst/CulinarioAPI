@@ -140,6 +140,37 @@ public class UserCredentialsController : ControllerBase
             return StatusCode(500, "Internal server error");
         }
     }
+    [HttpGet("check-username/{username}")]
+    public async Task<IActionResult> CheckUsername(string username)
+    {
+        _logger.LogInformation("CheckUsername called with username: {Username}", username);
+        try
+        {
+            var exists = await _userCredentialsService.IsUsernameUniqueAsync(username);
+            return Ok(!exists); // Return true if username is taken, false otherwise
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "An error occurred while checking username: {Username}", username);
+            return StatusCode(500, "Internal server error");
+        }
+    }
+
+    [HttpGet("check-email/{email}")]
+    public async Task<IActionResult> CheckEmail(string email)
+    {
+        _logger.LogInformation("CheckEmail called with email: {Email}", email);
+        try
+        {
+            var exists = await _userCredentialsService.IsEmailUniqueAsync(email);
+            return Ok(!exists); // Return true if email is taken, false otherwise
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "An error occurred while checking email: {Email}", email);
+            return StatusCode(500, "Internal server error");
+        }
+    }
 
     private void SetTokenCookie(string token)
     {
