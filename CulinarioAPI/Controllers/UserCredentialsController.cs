@@ -140,6 +140,7 @@ public class UserCredentialsController : ControllerBase
             return StatusCode(500, "Internal server error");
         }
     }
+
     [HttpGet("check-username/{username}")]
     public async Task<IActionResult> CheckUsername(string username)
     {

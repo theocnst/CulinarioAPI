@@ -2,11 +2,13 @@
 using System.Threading.Tasks;
 using CulinarioAPI.Dtos.RecipeDtos;
 using CulinarioAPI.Services.RecipeServices;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CulinarioAPI.Controllers
 {
     [Route("api/[controller]")]
+    [Authorize]
     [ApiController]
     public class CommentController : ControllerBase
     {
