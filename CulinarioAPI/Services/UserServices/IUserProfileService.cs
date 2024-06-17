@@ -11,6 +11,7 @@ namespace CulinarioAPI.Services.UserServices
         Task<bool> RemoveFriendAsync(FriendshipDto friendshipDto);
         Task<bool> AddLikedRecipeAsync(LikedRecipeOperationDto likedRecipeDto);
         Task<bool> RemoveLikedRecipeAsync(LikedRecipeOperationDto likedRecipeDto);
+        Task<string> GetUserProfilePicAsync(string username);
 
     }
 }

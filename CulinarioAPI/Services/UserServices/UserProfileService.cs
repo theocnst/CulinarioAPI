@@ -140,5 +140,20 @@ namespace CulinarioAPI.Services.UserServices
             }
         }
 
+        public async Task<string> GetUserProfilePicAsync(string username)
+        {
+            _logger.LogInformation("GetUserProfilePic called with username: {Username}", username);
+
+            try
+            {
+                return await _userProfileRepository.GetUserProfilePicAsync(username);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred while getting UserProfilePic for username: {Username}", username);
+                return null;
+            }
+        }
+
     }
 }

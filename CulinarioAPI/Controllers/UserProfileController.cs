@@ -138,4 +138,29 @@ public class UserProfileController : ControllerBase
         return BadRequest("Failed to unlike recipe.");
     }
 
+    [HttpGet("{username}/profilePic")]
+    public async Task<IActionResult> GetUserProfilePic(string username)
+    {
+        _logger.LogInformation("GetUserProfilePic called with username: {Username}", username);
+
+        try
+        {
+            var profilePic = await _userProfileService.GetUserProfilePicAsync(username);
+
+            if (profilePic == null)
+            {
+                _logger.LogWarning("UserProfilePic not found for username: {Username}", username);
+                return NotFound();
+            }
+
+            _logger.LogInformation("UserProfilePic found for username: {Username}", username);
+            return Ok(profilePic);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "An error occurred while getting UserProfilePic for username: {Username}", username);
+            return StatusCode(500, "Internal server error");
+        }
+    }   
+
 }

@@ -226,5 +226,17 @@ namespace CulinarioAPI.Repositories.UserRepositories
             return true;
         }
 
+        public async Task<string> GetUserProfilePicAsync(string username)
+        {
+            _logger.LogInformation("GetUserProfilePicAsync called with username: {Username}", username);
+
+            var profilePic = await _context.UserProfiles
+                .Where(p => p.Username == username)
+                .Select(p => p.ProfilePicture)
+                .SingleOrDefaultAsync();
+
+            _logger.LogInformation("UserProfilePic found for username: {Username}", username);
+            return profilePic;
+        }
     }
 }
