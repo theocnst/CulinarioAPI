@@ -153,36 +153,67 @@ namespace CulinarioAPI.Repositories.UserRepositories
             var existingFriendship = await _context.Friendships
                 .SingleOrDefaultAsync(f => f.Username == friendshipDto.Username && f.FriendUsername == friendshipDto.FriendUsername);
 
-            if (existingFriendship != null)
+            var reverseFriendship = await _context.Friendships
+                .SingleOrDefaultAsync(f => f.Username == friendshipDto.FriendUsername && f.FriendUsername == friendshipDto.Username);
+
+            if (existingFriendship != null && reverseFriendship != null)
             {
-                return false; // Friendship already exists
+                return false; // Friendship already exists in both directions
             }
 
-            var friendship = new Friendship
+            if (existingFriendship == null)
             {
-                Username = user.Username,
-                FriendUsername = friend.Username
-            };
+                var friendship = new Friendship
+                {
+                    Username = user.Username,
+                    FriendUsername = friend.Username
+                };
+                _context.Friendships.Add(friendship);
+            }
 
-            _context.Friendships.Add(friendship);
+            if (reverseFriendship == null)
+            {
+                var reverse = new Friendship
+                {
+                    Username = friend.Username,
+                    FriendUsername = user.Username
+                };
+                _context.Friendships.Add(reverse);
+            }
+
             await _context.SaveChangesAsync();
             return true;
         }
+
 
 
         public async Task<bool> RemoveFriendAsync(FriendshipDto friendshipDto)
         {
-            var friendship = await _context.Friendships.SingleOrDefaultAsync(f => f.Username == friendshipDto.Username && f.FriendUsername == friendshipDto.FriendUsername);
+            var friendship = await _context.Friendships
+                .SingleOrDefaultAsync(f => f.Username == friendshipDto.Username && f.FriendUsername == friendshipDto.FriendUsername);
 
-            if (friendship == null)
+            var reverseFriendship = await _context.Friendships
+                .SingleOrDefaultAsync(f => f.Username == friendshipDto.FriendUsername && f.FriendUsername == friendshipDto.Username);
+
+            if (friendship == null && reverseFriendship == null)
             {
                 return false;
             }
 
-            _context.Friendships.Remove(friendship);
+            if (friendship != null)
+            {
+                _context.Friendships.Remove(friendship);
+            }
+
+            if (reverseFriendship != null)
+            {
+                _context.Friendships.Remove(reverseFriendship);
+            }
+
             await _context.SaveChangesAsync();
             return true;
         }
+
         public async Task<bool> AddLikedRecipeAsync(LikedRecipeOperationDto likedRecipeDto)
         {
             var user = await _context.UserProfiles.SingleOrDefaultAsync(u => u.Username == likedRecipeDto.Username);
